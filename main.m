@@ -15,7 +15,7 @@ function main()
 %   To use, just run this script.
 
 % Setup
-[save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial] = set_up_graphics();
+[save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall] = set_up_graphics();
 
 % filament and fluids data
 [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL] = data();
@@ -343,7 +343,7 @@ for nt = 1:TOTAL_STEPS
             for i_sw = 1:N_sw
                 % scaled by length of filament / nondimensionalising
                 plot((X_S(SW_IND(i_sw,:)))/L, (Y_S(SW_IND(i_sw,:)))/L, ...
-                    '-', 'LineWidth', 3);
+                    '-', 'LineWidth', wdth_wall);
 
                 % added hold on to try and fix problem
                 % this is done so that the axes isn't being cleared
@@ -353,17 +353,27 @@ for nt = 1:TOTAL_STEPS
         
         if plot_centreline
                 plot(((X_S(SW_IND(1, :)) + X_S(SW_IND(2, :))) / (2 * L)), ((Y_S(SW_IND(1, :)) + Y_S(SW_IND(2, :))) / (2 * L)), ...
-                    '-', 'LineWidth', 1);
+                    '-', 'LineWidth', wdth_centreline);
         end
 
         % Calculate quantifiers for the filament
-        A_over_L = (max(Y_S) - min(Y_S))/L;
-        body_velocity_Y = mean(VY);
-        eff_drag_coeff = -weight_per_unit_length*L/body_velocity_Y;
-        title(['nt='  num2str(nt)  ', dt='  num2str(dt) ...
-               ', B='  num2str(B)  ', N_{sw}='  num2str(N_sw) ...
-               ', A/L=' num2str(A_over_L) ...
-               ', \gamma=' num2str(eff_drag_coeff) ''])
+        %A_over_L = (max(Y_S) - min(Y_S))/L;
+        %body_velocity_Y = mean(VY);
+        %eff_drag_coeff = -weight_per_unit_length*L/body_velocity_Y;
+        
+        %title(['nt='  num2str(nt)  ', dt='  num2str(dt) ...
+        %       ', B='  num2str(B)  ', N_{sw}='  num2str(N_sw) ...
+        %       ', A/L=' num2str(A_over_L) ...
+        %       ', \gamma=' num2str(eff_drag_coeff) ''])
+        
+        % - Level dependance (< 1.5)
+        gamma_hp = 1.455;
+        % - Length-independant dynamical equation constant (< 2.4)
+        beta_hp = 2.3;
+        % - Arbitrary constant of integration (c_hp = 12 gives best of both stroke types)
+        c_hp = 12;
+        
+        title(['Initial and Recovery Strokes modelled by Han-Peskin Simplification. nt=' num2str(nt)''])
 
         hold off
         

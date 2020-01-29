@@ -33,7 +33,7 @@ gamma = 3;
 
 % Constants for partial or full passive links
 k_p = 1;
-k_f = 5;
+k_f = 10;
 
 % Constants for basal coupling
 k_b = 50;
