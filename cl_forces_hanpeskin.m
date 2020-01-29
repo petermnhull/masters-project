@@ -1,17 +1,29 @@
-function [FX, FY] = cl_forces_hanpeskin(FX_IN, FY_IN, X_IN, Y_IN, N_w, gamma, c)
+function [FX, FY] = cl_forces_hanpeskin(FX_IN, FY_IN, X_IN, Y_IN, N_w, gamma, beta, c, nt, TOTAL_STEPS)
 
 % This function returns a complete asymmetric crosslinked set of forces,
 % according to Han Peskin paper
 
+% gamma is some scale for level dependance
+% c is an arbitrary constant of integration
+% beta is a length-independant parameter of the dynamical system
+
 FX = FX_IN;
 FY = FY_IN;
+
+% Time dependance
+time_dependance = true;
+if time_dependance
+    t = nt;
+else
+    t = 0;
+end
 
 for i=1:(N_w - 1)
         
         seg_a = i + 1;
         seg_b = N_w + i;
         
-        % Get constant
+        % Get level dependant constant
         k = gamma * (1 - ((i - 1) / N_w));
         
         % Get distance between segments
@@ -20,7 +32,7 @@ for i=1:(N_w - 1)
         r_dist = sqrt(x_dist^2 + y_dist^2);
         
         % Get tension
-        tension = (k * (r_dist)) - (c * exp(1));
+        tension = (k * (r_dist^2)) - (c * exp(-beta*t / TOTAL_STEPS));
         
         % Resolve forces
         
@@ -33,9 +45,9 @@ for i=1:(N_w - 1)
         tension_y = tension * sin_alpha;
 
         % Apply forces
-        FX(seg_a) = FX(seg_a) + tension_x;
-        FX(seg_b) = FX(seg_b) - tension_x;
-        FY(seg_a) = FY(seg_a) + tension_y;
-        FY(seg_b) = FY(seg_b) - tension_y;
+        FX(seg_a) = FX(seg_a) - tension_x;
+        FX(seg_b) = FX(seg_b) + tension_x;
+        FY(seg_a) = FY(seg_a) - tension_y;
+        FY(seg_b) = FY(seg_b) + tension_y;
         
 end

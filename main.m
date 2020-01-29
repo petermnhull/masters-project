@@ -15,18 +15,7 @@ function main()
 %   To use, just run this script.
 
 % Setup
-save_to_file = false;
-graphics = true;
-video = false;
-plot_step = 5;                % Plot every n timesteps
-save_step = 5;                % Save data to file every n timesteps
-
-% Plot centreline and walls of two filaments
-plot_centreline = true;
-plot_walls = true;
-
-% Plot initial conditions
-plot_initial = true;
+[save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial] = set_up_graphics();
 
 % filament and fluids data
 [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL] = data();
@@ -326,7 +315,7 @@ for nt = 1:TOTAL_STEPS
             fprintf(fid, 'dt, B, Nsw (RPY)\n');
             fprintf(fid, '%.6e %.6e %.f\n\n', dt, B, N_sw);
         end
-        for j = 1:Np
+        for j = 1:Np 
             if mod(j,N_w) ~= 0 % i.e. if not the last segment in filament
                 filament_id = floor(j/N_w); %0 to N_sw-1
                 L1 = LAMBDA1(j-filament_id);
@@ -364,7 +353,7 @@ for nt = 1:TOTAL_STEPS
         
         if plot_centreline
                 plot(((X_S(SW_IND(1, :)) + X_S(SW_IND(2, :))) / (2 * L)), ((Y_S(SW_IND(1, :)) + Y_S(SW_IND(2, :))) / (2 * L)), ...
-                    '.', 'LineWidth', 10);
+                    '-', 'LineWidth', 1);
         end
 
         % Calculate quantifiers for the filament
@@ -450,7 +439,7 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     TAUZ = zeros(Np,1);
     
     % External forces
-    [FX, FY] =  all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L);
+    [FX, FY] =  all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L, nt, TOTAL_STEPS);
   
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
