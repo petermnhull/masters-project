@@ -14,7 +14,6 @@ function main()
 %
 %   To use, just run this script.
 
-
 % Setup
 save_to_file = false;
 graphics = true;
@@ -22,37 +21,20 @@ video = false;
 plot_step = 5;                % Plot every n timesteps
 save_step = 5;                % Save data to file every n timesteps
 
-% Plot centreline of two filaments
+% Plot centreline and walls of two filaments
 plot_centreline = true;
 plot_walls = true;
 
 % Plot initial conditions
 plot_initial = true;
 
-% Filament data
-a = 1;                        % segment 'radius' (half filament width) % PH: Originally a=1
-N_sw = 2;                     % number of filaments                    % PH: Originally N_sw = 1
-N_w = 21;                     % number of segments in filament         % PH: Originally N_w = 30
-Np = N_sw*N_w;                % total number of segments
-N_lam = N_sw*(N_w - 1);       % number of lambdas
-max_broyden_steps = 3*Np;
+% filament and fluids data
+[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL] = data();
 
-B = 1000;                      % dimensionless elasto-gravitational number B
-weight_per_unit_length = 1e0; % weight per unit length W
+% iteration process data
+[max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
 
-% increased time step, before it was 30. We reduced time step
-steps_per_unit_time = 600;     % for sedimenting, unit time T = L^2 mu / F
-num_settling_times = 1;       % number of settling (unit) times
-concheck_tol = 1e-4;          % Broyden's tolerance
-
-DL_factor = 2.2;              % PH: Originally DL_factor=2.2
-DL = DL_factor*a;             % distance between segment centres, Delta L
-L = N_w*DL;                   % filament length L
-mu = 10;                       % fluid viscosity
-
-KB = weight_per_unit_length*L^3/B;         % bending modulus, K_B
-KBdivDL = KB/DL;
-
+% filename
 filename = ['out-'  datestr(now,'yyyymmdd-HHMMSS') '-Nsw' num2str(N_sw) ...
             '-Nw' num2str(N_w) '-B' num2str(B) '-RPY']; % used for data
                                                         % file & video file
@@ -90,40 +72,8 @@ PtoS = floor([0:Np-1]./N_w)+1;
 % Set up position and orientation of first segment in every filament
 % (We are happy with the default positon of [X,Y]=[0,0] and default
 %  orientation of THETA=0 but you can change this here.)
-
-
-
-
-
-% ----
-
-% PH: Need to put my own positions/angles here???? Can't figure out how to
-% do this.
-
-% Change the angle of the first segment of the first filament
-% need to manually change all the thetas
-
-displacement_theta = pi / 2;
-% to make them curved add this to THETAs:   ' + i*pi/N_w '
-for j=1:2
-    for i=1:N_w
-        THETA(i + (j-1)*N_w) = displacement_theta;
-    end
-end
-
-% Pertubation of initial condition
-%THETA(1) = 0.00001;
-
-% Position filaments an even distance away from eachother
 filament_separation = 5;
-for i=1:N_sw
-    X(1+(i-1)*N_w) = filament_separation*(i-1);
-end
-
-% ----
-
-
-
+[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation);
 
 % Having placed the first segment of each filament and set their
 % orientation, use robot_arm to construct the position of the remaining
@@ -329,15 +279,6 @@ for nt = 1:TOTAL_STEPS
     X = X_S;
     Y = Y_S;
     
-    % -------------------
-    
-    % CLAMP THE ENDS!
-    
-    % Try clamping the ends
-    
-    % -------------------
-    
-    
     THETA = THETA_S;
     TX = cos(THETA);
     TY = sin(THETA);
@@ -407,8 +348,8 @@ for nt = 1:TOTAL_STEPS
         
         com_X = mean(X_S);
         com_Y = mean(Y_S);
+        
         if plot_walls
-
             % for each filament do the following loop
             for i_sw = 1:N_sw
                 % scaled by length of filament / nondimensionalising
@@ -426,7 +367,7 @@ for nt = 1:TOTAL_STEPS
                     '.', 'LineWidth', 10);
         end
 
-        % Work out quantifiable things about the sedimenting filament
+        % Calculate quantifiers for the filament
         A_over_L = (max(Y_S) - min(Y_S))/L;
         body_velocity_Y = mean(VY);
         eff_drag_coeff = -weight_per_unit_length*L/body_velocity_Y;
@@ -437,37 +378,44 @@ for nt = 1:TOTAL_STEPS
 
         hold off
         
+        % Aspect ratios
         pbaspect([1 1 1])
         xlim([com_X/L-0.5,com_X/L+0.5]);
         ylim([com_Y/L-0.5,com_Y/L+0.5]);
         
+        % Labelling
         xlabel('(x-x_{COM})/L');
         ylabel('(y-y_{COM})/L');
         axis equal
-
+        
+        % Video recording
         if video == true
             frame = getframe(gcf);
             writeVideo(Filament_movie,frame);
             framecount=framecount+1;
         end
         
+        % Pause on first step
         if nt == 1 && plot_initial
             pause
         end
         
         pause(0.01);
     end
-
+    
+    % Plot
     if plot_now == plot_step
         plot_now = 0;
     end
     if save_now == save_step
         save_now = 0;
     end
-
+    
+    % Iteration tracking
     frame_time(nt) = toc(frame_start);
     iters(nt) = iter;
 
+    % Print data to file
     fprintf(['[' format_time(frame_time(nt)) '|' ...
             format_time(mean(frame_time(1:nt))*(TOTAL_STEPS-nt)) ...
             '-][#Broy steps: '  num2str(num_broydens_steps_required) ...
@@ -475,15 +423,19 @@ for nt = 1:TOTAL_STEPS
 
 end
 
+% Final printed info
 disp('')
 disp('Run finished')
 disp(['Total time:' format_time(sum(frame_time))])
 
+% Close video
 if video
     close(Filament_movie);
 end
 
+% ---------------------------------
 
+% Forces
 function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
                                                    THETA_S, LAMBDA1,...
                                                    LAMBDA2, tol)
@@ -492,82 +444,27 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
 %    Then checks convergence. For details, see docstrings of functions
 %    within.
 
+    % Initialisation
     FX = zeros(Np,1);
     FY = zeros(Np,1);
-    
     TAUZ = zeros(Np,1);
     
-    % Add extra forces here to FX and FY
-    
-    % gravity
-    gravity = false;
-    if gravity
-        FY = -weight_per_unit_length*L/N_w*ones(Np,1);
-    end
-    
-    
-    % Cross link equilibrium length
-    cl_el = sqrt(filament_separation^2 + DL^2);
-    
-    cross_links_hanpeskin = true;
-    cross_links_trig = false;
-    cross_links_linear = false;
-    passive_links_partial = false;
-    passive_links_full = true;
-    external_pinch = false;
-    
-    % Cross linked forces using han peskin
-    if cross_links_hanpeskin
-        [FX, FY] = cl_forces_hanpeskin(FX, FY, X_S, Y_S, N_w, 1);
-    end
-    
-    % Cross linked forces with variable arc length, trig
-    if cross_links_trig
-        [FX, FY] = cl_forces_variable_al(FX, FY, X_S, Y_S, N_w, 5, 5, cl_el, cl_el, 3);
-    end
-    
-    % Cross linked forces with variable arc length, linear
-    if cross_links_linear
-        [FX, FY] = cl_forces_variable_al_linear(FX, FY, X_S, Y_S, N_w, 5, 5, cl_el, cl_el, 3);
-    end
-    
-    % Passive Links (every other set of segments)
-    if passive_links_partial
-        for j=1:((N_w/2)-1)
-            [FX, FY] = add_spring_force_between_segments(FX, FY, X_S, Y_S, 2*j - 1, N_w + 2*j - 1, 1, filament_separation);
-        end
-    end
-    
-    % Passive Links (every set of segments)
-    if passive_links_full
-        for j=1:N_w
-            [FX, FY] = add_spring_force_between_segments(FX, FY, X_S, Y_S, j, N_w + j, 2, filament_separation);
-        end
-    end
-   
-    % External pinch
-    if external_pinch
-        [FX, FY] = add_spring_force_between_segments(FX, FY, X_S, Y_S, 3, 8, 5, filament_separation);
-        [FX, FY] = add_spring_force_between_segments(FX, FY, X_S, Y_S, N_w + 3, N_w + 8, 5, filament_separation);
-    end
-
-    
-    
-    % --- Leave these alone
-    
- 
-    
-    % makes them elastic
+    % External forces
+    [FX, FY] =  all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L);
+  
+    % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
 
-    % stop them colliding, prevents overlapping because the physics is
-    % completely different, applies a small repelling force between segments when
-    % they get really close to eachother
+    % Collision barrier forces
+    % - stop them colliding, prevents overlapping because the physics is
+    %   completely different, applies a small repelling force between segments when
+    %   they get really close to eachother
     [FX, FY] = collision_barrier(X_S, Y_S, FX, FY, ...
                                  Lx_collision, Ly_collision, PtoS, ...
                                  map, head, list, RAD);
 
-    % no stretching                           
+    % Constraint forces
+    % - No stretching
     [FX, FY, TAUZ] = constraint_forces_torques(FX, FY, TAUZ, TX_S, TY_S,...
                                          LAMBDA1, LAMBDA2, SW_IND, DL_SW);
 

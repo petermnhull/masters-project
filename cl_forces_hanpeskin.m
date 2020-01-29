@@ -1,4 +1,4 @@
-function [FX, FY] = cl_forces_hanpeskin(FX_IN, FY_IN, X_IN, Y_IN, N_w, gamma)
+function [FX, FY] = cl_forces_hanpeskin(FX_IN, FY_IN, X_IN, Y_IN, N_w, gamma, c)
 
 % This function returns a complete asymmetric crosslinked set of forces,
 % according to Han Peskin paper
@@ -13,9 +13,6 @@ for i=1:(N_w - 1)
         
         % Get constant
         k = gamma * (1 - ((i - 1) / N_w));
-        
-        % Set arbitrary constant
-        c = 0.1;
         
         % Get distance between segments
         x_dist = X_IN(seg_a) - X_IN(seg_b);
