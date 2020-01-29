@@ -1,10 +1,8 @@
 # Masters Project
 
-Supplementary Matlab/Octave code to ['Methods for suspensions of passive and active filaments'](https://arxiv.org/abs/1903.12609), 2019, by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny. 
+Adaptation of an existing filament model as a two-wall sliding filament model, using spring forces to model passive links and active motor protein links as seen in biological axonemal architecture of flagellum and cilia.
 
-Original repository: https://github.com/ekeaveny/filaments/tree/master/matlab-2d-rpy
-
-This version of the filament model is being used to model flagellum using inextensible filaments as the walls of the flagellum, connected by spring forces which model the active and passive links in the biological axonemal architecture.
+Original repository (accessed 1 October 2019): https://github.com/ekeaveny/filaments/tree/master/matlab-2d-rpy
 
 ## Overview
 This code demonstrates the use of the method described in [the paper](https://arxiv.org/abs/1903.12609) in simulating a single flexible filament falling under gravity in an infinite domain.
