@@ -13,23 +13,15 @@ passive_links_full = true;
 basal_coupling = false;
 external_pinch = false;
 
-% -- PARAMETERS --
+% -- PARAMETERS (NOT FOR HAN PESKIN)--
 
 % Cross link equilibrium length
 cl_el = sqrt(filament_separation^2 + DL^2);
 
-% Constants for cross links (han peskin)
-% - Level dependance (< 1.5)
-gamma_hp = 1.455;
-% - Length-independant dynamical equation constant (< 2.4)
-beta_hp = 2.3;
-% - Arbitrary constant of integration (c_hp = 12 gives best of both stroke types)
-c_hp = 12;
-
 % Constants for cross links (linear and trig)
 k_a = 5;
 k_b = 5;
-gamma = 3;
+gamma = 10;
 
 % Constants for partial or full passive links
 k_p = 1;
@@ -59,7 +51,7 @@ end
    
 % Cross linked forces using han peskin
 if cross_links_hanpeskin
-    [FX, FY] = cl_forces_hanpeskin(FX, FY, X_S, Y_S, N_w, gamma_hp, beta_hp, c_hp, nt, TOTAL_STEPS);
+    [FX, FY] = cl_forces_hanpeskin(FX, FY, X_S, Y_S, N_w, nt, TOTAL_STEPS);
 end
     
 % Cross linked forces with variable arc length, trig

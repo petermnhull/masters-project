@@ -373,7 +373,7 @@ for nt = 1:TOTAL_STEPS
         % - Arbitrary constant of integration (c_hp = 12 gives best of both stroke types)
         c_hp = 12;
         
-        title(['Initial and Recovery Strokes modelled by Han-Peskin Simplification. nt=' num2str(nt)''])
+        title(['Power/Recovery Strokes modelled by Han-Peskin Forces. nt=' num2str(nt)''])
 
         hold off
         

@@ -1,4 +1,4 @@
-function [FX, FY] = cl_forces_hanpeskin(FX_IN, FY_IN, X_IN, Y_IN, N_w, gamma, beta, c, nt, TOTAL_STEPS)
+function [FX, FY] = cl_forces_hanpeskin(FX_IN, FY_IN, X_IN, Y_IN, N_w, nt, TOTAL_STEPS)
 
 % This function returns a complete asymmetric crosslinked set of forces,
 % according to Han Peskin paper
@@ -10,13 +10,21 @@ function [FX, FY] = cl_forces_hanpeskin(FX_IN, FY_IN, X_IN, Y_IN, N_w, gamma, be
 FX = FX_IN;
 FY = FY_IN;
 
-% Time dependance
-time_dependance = true;
-if time_dependance
-    t = nt;
-else
-    t = 0;
-end
+% eps : controls ATP at tip
+% gamma : controls ATP at source
+% beta : length-independant dynamical constant
+% c : constant of integration of dynamical system
+
+% Parameters for 1/r^2 system
+%eps = 0.0005;
+%gamma = 1.455;
+%beta = 2.3;
+%c = 0.1;
+
+% Parameters for linear system
+gamma = 1.455;
+beta = 2.3;
+c = 12;
 
 for i=1:(N_w - 1)
         
@@ -24,7 +32,10 @@ for i=1:(N_w - 1)
         seg_b = N_w + i;
         
         % Get level dependant constant
+        % - Linear diffusion of ATP
         k = gamma * (1 - ((i - 1) / N_w));
+        % - 1/r^2 diffusion ATP
+        %k = gamma + (gamma - eps)*(N_w^2 / (N_w^2 - 1))*((1 - i^2)/i^2);
         
         % Get distance between segments
         x_dist = X_IN(seg_a) - X_IN(seg_b);
@@ -32,7 +43,7 @@ for i=1:(N_w - 1)
         r_dist = sqrt(x_dist^2 + y_dist^2);
         
         % Get tension
-        tension = (k * (r_dist^2)) - (c * exp(-beta*t / TOTAL_STEPS));
+        tension = (k * (r_dist^2)) - (c * exp(-beta*nt / TOTAL_STEPS));
         
         % Resolve forces
         
