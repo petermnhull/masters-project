@@ -14,17 +14,18 @@ FY = FY_IN;
 % gamma : controls ATP at source
 % beta : length-independant dynamical constant
 % c : constant of integration of dynamical system
+% -- (seems to control power stroke)
 
 % Parameters for 1/r^2 system
-%eps = 0.0005;
+%eps = 0.001;
 %gamma = 1.455;
 %beta = 2.3;
-%c = 0.1;
+%c = 0.01;
 
 % Parameters for linear system
 gamma = 1.455;
 beta = 2.3;
-c = 12;
+c = 14;
 
 for i=1:(N_w - 1)
         
