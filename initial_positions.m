@@ -12,13 +12,13 @@ curved_filaments = false;
 perturbed = false;
 
 
-for j=1:2
+for j=1:N_sw
     for i=1:N_w
         THETA(i + (j-1)*N_w) = displacement_theta;
         
         % Curve the filaments
         if curved_filaments
-            THETA(i + (j - 1)*N_w) = THETA(i + (j - 1)*N_w) + i*pi/N_w
+            THETA(i + (j - 1)*N_w) = THETA(i + (j - 1)*N_w) + i*pi/N_w;
         end
     end
 end
@@ -29,6 +29,16 @@ if perturbed
 end
 
 % Position filaments an even distance away from eachother
+x_pos = 0;
 for i=1:N_sw
-    X(1+(i-1)*N_w) = filament_separation*(i-1);
+    x_pos = x_pos + filament_separation;
+    
+    X(1+(i-1)*N_w) = x_pos;
 end
+
+%X(1) = 0;
+%X(N_w + 1) = 5;
+%X(2*N_w + 1) = 12;
+%X(3*N_w + 1) = 17;
+%X(4*N_w + 1) = 24;
+%X(5*N_w + 1) = 29;

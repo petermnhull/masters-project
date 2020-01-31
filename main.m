@@ -18,7 +18,7 @@ function main()
 [save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall] = set_up_graphics();
 
 % filament and fluids data
-[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL] = data();
+[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs] = data();
 
 % iteration process data
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
@@ -352,8 +352,11 @@ for nt = 1:TOTAL_STEPS
         end
         
         if plot_centreline
-                plot(((X_S(SW_IND(1, :)) + X_S(SW_IND(2, :))) / (2 * L)), ((Y_S(SW_IND(1, :)) + Y_S(SW_IND(2, :))) / (2 * L)), ...
-                    '-', 'LineWidth', wdth_centreline);
+            for i_pairs = 1:N_pairs
+                plot(((X_S(SW_IND((2*i_pairs) - 1, :)) + X_S(SW_IND(2*i_pairs, :))) / (2 * L)), ((Y_S(SW_IND((2*i_pairs) - 1, :)) + Y_S(SW_IND(2*i_pairs, :))) / (2 * L)), ...
+                            '-', 'LineWidth', wdth_centreline);
+                hold on;
+            end
         end
 
         % Calculate quantifiers for the filament
@@ -449,7 +452,7 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     TAUZ = zeros(Np,1);
     
     % External forces
-    [FX, FY] =  all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L, nt, TOTAL_STEPS);
+    [FX, FY] =  all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L, nt, TOTAL_STEPS, N_pairs);
   
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
