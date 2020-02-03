@@ -81,6 +81,10 @@ FX = zeros(Np,1);        % force on each segment in x-direction
 FY = zeros(Np,1);        % force on each segment in y-direction
 TAUZ = zeros(Np,1);      % torque on each segment (in z-direction)
 
+% Tensions from Han-Peskin on segments
+T = zeros(Np, 1);
+T_S = T;
+
 % Steric force setup.
 % For explanation, type 'help collision_barrier'.
 map = [1 1 1 1]';
@@ -337,7 +341,7 @@ for nt = 1:TOTAL_STEPS
             % Print just the final time, x position, y position, modulus a,
             % modulus b, and gamma
             fprintf(fid, ['%.2f %.6f %.6f %.1f %1.f %1.f\n'], ...
-                         t, X(j), Y(j), 1, 1, 0);
+                         t, X(j), Y(j));
             
         end
         fprintf(fid,'\n');
@@ -458,8 +462,11 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     TAUZ = zeros(Np,1);
     
     % External forces
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L, nt, TOTAL_STEPS, N_pairs);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs);
   
+    % Han-Peskin
+    [FX, FY, T] = cl_forces_hanpeskin_new(FX, FY, X_S, Y_S, N_w, N_pairs, dt, T_S);
+    
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
 
