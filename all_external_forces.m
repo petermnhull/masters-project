@@ -5,8 +5,8 @@ FY = FY_IN;
 
 % Forces to include
 gravity = false;
-cross_links_hanpeskin = true;
-cross_links_trig = false;
+cross_links_hanpeskin = false;
+cross_links_trig = true;
 cross_links_linear = false;
 passive_links_partial = false;
 passive_links_full = true;
@@ -18,14 +18,9 @@ external_pinch = false;
 % Cross link equilibrium length
 cl_el = sqrt(filament_separation^2 + DL^2);
 
-% Constants for cross links (linear and trig)
-k_a = 1;
-k_b = 1;
-gamma = 1;
-
 % Constants for partial or full passive links
 k_p = 1;
-k_f = 10;
+k_f = 1;
 
 % Constants for basal coupling
 k_b = 50;
@@ -56,12 +51,12 @@ end
     
 % Cross linked forces with variable arc length, trig
 if cross_links_trig
-    [FX, FY] = cl_forces_variable_al(FX, FY, X_S, Y_S, N_w, k_a, k_b, cl_el, cl_el, gamma);
+    [FX, FY] = cl_forces_variable_al(FX, FY, X_S, Y_S, N_w, cl_el);
 end
     
 % Cross linked forces with variable arc length, linear
 if cross_links_linear
-    [FX, FY] = cl_forces_variable_al_linear(FX, FY, X_S, Y_S, N_w, k_a, k_b, cl_el, cl_el, gamma);
+    [FX, FY] = cl_forces_variable_al_linear(FX, FY, X_S, Y_S, N_w, cl_el);
 end
     
 % Passive Links (every other set of segments)

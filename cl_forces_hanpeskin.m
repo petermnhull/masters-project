@@ -26,8 +26,8 @@ FY = FY_IN;
 
 % Parameters for linear system
 gamma = 1.455;
-beta = 2.3;
-c = 14;
+beta = 3;
+c = 14; %14
 for i_pairs=1:N_pairs
     for i=1:(N_w - 1)
         

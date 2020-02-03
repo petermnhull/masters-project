@@ -24,9 +24,11 @@ function main()
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
 
 % filename
-filename = ['out-'  datestr(now,'yyyymmdd-HHMMSS') '-Nsw' num2str(N_sw) ...
-            '-Nw' num2str(N_w) '-B' num2str(B) '-RPY']; % used for data
-                                                        % file & video file
+%filename = ['out-'  datestr(now,'yyyymmdd-HHMMSS') '-Nsw' num2str(N_sw) ...
+%            '-Nw' num2str(N_w) '-B' num2str(B) '-RPY']; % used for data
+%                                                        % file & video file
+                                                        
+filename = 'tmp.txt';
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -309,12 +311,15 @@ for nt = 1:TOTAL_STEPS
     % Plot and save
     plot_now = plot_now + 1;
     save_now = save_now + 1;
+
     if(save_now == save_step && save_to_file)
-        fid = fopen(['output/' filename '.dat'], 'a');
+        %fid = fopen(['output/' filename '.txt'], 'a');
+        fid = fopen(filename, 'a');
         if nt == 1
             fprintf(fid, 'dt, B, Nsw (RPY)\n');
             fprintf(fid, '%.6e %.6e %.f\n\n', dt, B, N_sw);
         end
+        
         for j = 1:Np 
             if mod(j,N_w) ~= 0 % i.e. if not the last segment in filament
                 filament_id = floor(j/N_w); %0 to N_sw-1
@@ -323,14 +328,21 @@ for nt = 1:TOTAL_STEPS
             else
                 L1 = 0; L2 = 0;
             end
-            fprintf(fid, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
-                          '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
-                         t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
-                         OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
+            %fprintf(fid, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
+            %              '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
+            %             t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
+            %             OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
+            
+            
+            % Print just the final time, x position, y position, modulus a,
+            % modulus b, and gamma
+            fprintf(fid, ['%.2f %.6f %.6f %.1f %1.f %1.f\n'], ...
+                         t, X(j), Y(j), 1, 1, 0);
+            
         end
         fprintf(fid,'\n');
         fclose(fid);
-        clf;
+        %clf;
     end
 
     if(plot_now == plot_step && graphics)
@@ -369,14 +381,8 @@ for nt = 1:TOTAL_STEPS
         %       ', A/L=' num2str(A_over_L) ...
         %       ', \gamma=' num2str(eff_drag_coeff) ''])
         
-        % - Level dependance (< 1.5)
-        gamma_hp = 1.455;
-        % - Length-independant dynamical equation constant (< 2.4)
-        beta_hp = 2.3;
-        % - Arbitrary constant of integration (c_hp = 12 gives best of both stroke types)
-        c_hp = 12;
         
-        title(['Power/Recovery Strokes modelled by Han-Peskin Forces. nt=' num2str(nt)''])
+        title(['Filament bending using cross-linked forces. nt=' num2str(nt)''])
 
         hold off
         
@@ -452,7 +458,7 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     TAUZ = zeros(Np,1);
     
     % External forces
-    [FX, FY] =  all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L, nt, TOTAL_STEPS, N_pairs);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, Np, weight_per_unit_length, L, nt, TOTAL_STEPS, N_pairs);
   
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);

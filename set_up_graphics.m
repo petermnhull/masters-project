@@ -3,18 +3,18 @@ function [save_to_file, graphics, video, plot_step, save_step, ...
     wdth_wall] = set_up_graphics()
 
 % Setup
-save_to_file = false;
+save_to_file = true;
 graphics = true;
 video = false;
 plot_step = 10;                % Plot every n timesteps
-save_step = 10;                % Save data to file every n timesteps
+save_step = 1;                % Save data to file every n timesteps
 
 % Plot centreline and walls of two filaments
 plot_centreline = true;
 plot_walls = true;
 
 % Line thicknesses
-wdth_centreline = 3;
+wdth_centreline = 4;
 wdth_wall = 5;
 
 % Plot initial conditions
