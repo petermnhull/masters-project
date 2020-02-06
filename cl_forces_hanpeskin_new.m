@@ -10,7 +10,8 @@ FY = FY_IN;
 T = T_IN;
 
 % Parameters for linear system
-lambda = 2;
+lambda = 0.5;
+beta = 0.5;
 
 for i_pairs=1:N_pairs
     for i=1:(N_w - 1)
@@ -29,7 +30,7 @@ for i_pairs=1:N_pairs
             r_dist = sqrt(x_dist^2 + y_dist^2);
            
             % Update tension - Forward Euler
-            T_OUT = T_IN(seg_a) + (dt * ((k * (r_dist^2)) - T_IN(seg_a)));
+            T_OUT = T_IN(seg_a) + (dt * beta * ((k * (r_dist^2)) - T_IN(seg_a)));
 
             % Resolve forces
             % - angles for x and y components

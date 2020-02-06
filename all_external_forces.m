@@ -6,10 +6,10 @@ FY = FY_IN;
 % Forces to include
 gravity = false;
 
-passive_links_full = true;
+passive_links_full = false;
 
 cross_links_trig = false;
-cross_links_linear = false;
+cross_links_linear = true;
 
 external_pinch = false;
 
