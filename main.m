@@ -174,6 +174,9 @@ for nt = 1:TOTAL_STEPS
         THETA_S = THETA;
         TX_S = cos(THETA_S);
         TY_S = sin(THETA_S);
+        
+        % Initialise lagrange multiplier for tethering
+        gam = zeros(2,1);
     else
         % Rearranged linear interpolation as guess for x^(j+1), i.e.
         % x^j = 0.5*( x^(j-1) + x^(j+1) )
@@ -195,7 +198,7 @@ for nt = 1:TOTAL_STEPS
     % If ||ERROR_VECk|| < concheck_tol (= epsilon in Alg 2, Line 4),
     % then concheck = 0. Else, 1.
     [concheck,ERROR_VECk,VY] = F(X_S,Y_S,TX_S,TY_S,THETA_S, ...
-                                             LAMBDA1,LAMBDA2,concheck_tol);
+                                             LAMBDA1,LAMBDA2,concheck_tol, gam);
     % (VY only being outputted here for calculating effective drag later.)
 
     % Find approximate Jacobian J_0
@@ -206,22 +209,31 @@ for nt = 1:TOTAL_STEPS
     % Find J_0^{-1} f(X_k)  (from Alg 2, Line 5)
     J0invERROR_VECk(idx,:) = blockwise_backslash(J0, ...
                                                  ERROR_VECk(idx,:),SW_IND);
-
-    num_broydens_steps_required = 0;
+    
+    num_broydens_steps_required = 0;   
+    
     while(concheck == 1) % Alg 2, Line 4
         % Alg 2, Line 5. DeltaX is Delta X in paper.
         DeltaX = -apply_inverse_jacobian(J0invERROR_VECk, Cmat, Dmat, ...
                                                        ERROR_VECk, iter+1);
-
+       
         % Update the positions and lambdas
         THETA_S = THETA_S + DeltaX(2*Np + 1:3*Np);
         TX_S = cos(THETA_S);
         TY_S = sin(THETA_S);
-        for j_sw = 1:N_sw
-            first_bead = SW_IND(j_sw,1);
-            X_S(first_bead) = X_S(first_bead) + DeltaX(first_bead);
-            Y_S(first_bead) = Y_S(first_bead) + DeltaX(Np + first_bead);
-        end
+        
+        % Update lagrange multiplier for tethering
+        gam(1) = gam(1) + DeltaX(1);
+        gam(2) = gam(2) + DeltaX(Np + 1);
+        
+        % Update position of first beads
+        % -- THIS HAS BEEN REPLACED BY LAGRANGE MULTIPLIERS
+        %for j_sw = 1:N_sw
+            %first_bead = SW_IND(j_sw,1);
+            %X_S(first_bead) = X_S(first_bead) + DeltaX(first_bead);
+            %Y_S(first_bead) = Y_S(first_bead) + DeltaX(Np + first_bead);
+        %end
+        
         [X_S,Y_S] = robot_arm(X_S,Y_S,THETA_S,SW_IND,DL);
         lambda_locations = 1:2*Np;
         lambda_locations([1:N_w:end]) = [];
@@ -232,7 +244,7 @@ for nt = 1:TOTAL_STEPS
         % Check to see if the new state is an acceptable solution:
         % ERROR_VECk1 = f(X_(k+1))
         [concheck, ERROR_VECk1,VY] = F(X_S,Y_S,TX_S,TY_S,THETA_S, ...
-                                             LAMBDA1,LAMBDA2,concheck_tol);
+                                             LAMBDA1,LAMBDA2,concheck_tol, gam);
 
         iter = iter + 1;
 
@@ -266,7 +278,7 @@ for nt = 1:TOTAL_STEPS
         running_total_count = running_total_count + 1;
     end
 
-    % Step in time, step in time. Never need a reason, never need a rhyme..
+    % Step in time
     t = t + dt;
     X_T = X;
     Y_T = Y;
@@ -450,7 +462,7 @@ end
 % Forces
 function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
                                                    THETA_S, LAMBDA1,...
-                                                   LAMBDA2, tol)
+                                                   LAMBDA2, tol, gam)
 % F  places forces and torques on the segments, calculates the resultant
 %    velocities and angular velocities, and forms the error vector f(X*).
 %    Then checks convergence. For details, see docstrings of functions
@@ -465,7 +477,7 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs);
   
     % Han-Peskin
-    [FX, FY, T] = cl_forces_hanpeskin_new(FX, FY, X_S, Y_S, N_w, N_pairs, dt, T_S);
+    %[FX, FY, T] = cl_forces_hanpeskin_new(FX, FY, X_S, Y_S, N_w, N_pairs, dt, T_S);
     
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
@@ -482,7 +494,14 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     % - No stretching
     [FX, FY, TAUZ] = constraint_forces_torques(FX, FY, TAUZ, TX_S, TY_S,...
                                          LAMBDA1, LAMBDA2, SW_IND, DL_SW);
-
+      
+    % Tethering
+    for j_sw = 1:N_sw
+       first_bead = SW_IND(j_sw,1);
+       FX(first_bead) = FX(first_bead) + gam(1);
+       FY(first_bead) = FY(first_bead) + gam(2);
+    end    
+    
     % ---------
                                         
     FZ = zeros(Np,1);
