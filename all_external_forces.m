@@ -1,4 +1,4 @@
-function [FX, FY] = all_external_forces(FX_IN, FY_IN, X_S, Y_S, N_w, DL, filament_separation, N_pairs)
+function [FX, FY] = all_external_forces(FX_IN, FY_IN, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S)
 
 FX = FX_IN;
 FY = FY_IN;
@@ -6,10 +6,12 @@ FY = FY_IN;
 % Forces to include
 gravity = false;
 
-passive_links_full = false;
+passive_links_full = true;
 
 cross_links_trig = false;
-cross_links_linear = true;
+cross_links_linear = false;
+cross_links_linear_osc = false;
+cross_links_han_peskin = true;
 
 external_pinch = false;
 
@@ -19,7 +21,7 @@ external_pinch = false;
 cl_el = sqrt(filament_separation^2 + DL^2);
 
 % Constant for full passive links
-k_f = 15;
+k_f = 10;
 
 % Constants for external pinch
 k_e = 1;
@@ -40,6 +42,15 @@ end
 % Cross linked forces with variable arc length, linear
 if cross_links_linear
     [FX, FY] = cl_forces_variable_al_linear(FX, FY, X_S, Y_S, N_w, cl_el);
+end
+
+% Cross linked forces with variable arc length, linear
+if cross_links_linear_osc
+    [FX, FY] = cl_forces_variable_al_linear_osc(FX, FY, X_S, Y_S, N_w, cl_el, nt, TOTAL_STEPS);
+end
+
+if cross_links_han_peskin
+    [FX, FY, T] = cl_forces_hanpeskin_new(FX, FY, X_S, Y_S, N_w, N_pairs, dt, T_S);
 end
     
 % Passive Links (every set of segments)
