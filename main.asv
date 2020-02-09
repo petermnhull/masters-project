@@ -197,7 +197,8 @@ for nt = 1:TOTAL_STEPS
     % Find f(X_k) and place into ERROR_VECk.
     % If ||ERROR_VECk|| < concheck_tol (= epsilon in Alg 2, Line 4),
     % then concheck = 0. Else, 1.
-    [concheck,ERROR_VECk,VY] = F(X_S,Y_S,TX_S,TY_S,THETA_S, LAMBDA1,LAMBDA2,concheck_tol, gam, nt, TOTAL_STEPS, dt);
+    [concheck,ERROR_VECk,VY] = F(X_S,Y_S,TX_S,TY_S,THETA_S, ...
+                                             LAMBDA1,LAMBDA2,concheck_tol, gam);
     % (VY only being outputted here for calculating effective drag later.)
 
     % Find approximate Jacobian J_0
@@ -221,19 +222,17 @@ for nt = 1:TOTAL_STEPS
         TX_S = cos(THETA_S);
         TY_S = sin(THETA_S);
         
-        % Update information for first segment
-        if tethered
-            % Update lagrange multiplier for tethering
-            gam(1) = gam(1) + DeltaX(1);
-            gam(2) = gam(2) + DeltaX(Np + 1);
-        else 
-            % Update position of first beads
-            for j_sw = 1:N_sw
-                first_bead = SW_IND(j_sw,1);
-                X_S(first_bead) = X_S(first_bead) + DeltaX(first_bead);
-                Y_S(first_bead) = Y_S(first_bead) + DeltaX(Np + first_bead);
-            end
-        end
+        % Update lagrange multiplier for tethering
+        gam(1) = gam(1) + DeltaX(1);
+        gam(2) = gam(2) + DeltaX(Np + 1);
+        
+        % Update position of first beads
+        % -- THIS HAS BEEN REPLACED BY LAGRANGE MULTIPLIERS
+        %for j_sw = 1:N_sw
+            %first_bead = SW_IND(j_sw,1);
+            %X_S(first_bead) = X_S(first_bead) + DeltaX(first_bead);
+            %Y_S(first_bead) = Y_S(first_bead) + DeltaX(Np + first_bead);
+        %end
         
         [X_S,Y_S] = robot_arm(X_S,Y_S,THETA_S,SW_IND,DL);
         lambda_locations = 1:2*Np;
@@ -245,7 +244,7 @@ for nt = 1:TOTAL_STEPS
         % Check to see if the new state is an acceptable solution:
         % ERROR_VECk1 = f(X_(k+1))
         [concheck, ERROR_VECk1,VY] = F(X_S,Y_S,TX_S,TY_S,THETA_S, ...
-                                             LAMBDA1,LAMBDA2,concheck_tol, gam, nt, TOTAL_STEPS, dt);
+                                             LAMBDA1,LAMBDA2,concheck_tol, gam);
 
         iter = iter + 1;
 
@@ -463,7 +462,7 @@ end
 % Forces
 function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
                                                    THETA_S, LAMBDA1,...
-                                                   LAMBDA2, tol, gam, nt, TOTAL_STEPS, dt)
+                                                   LAMBDA2, tol, gam)
 % F  places forces and torques on the segments, calculates the resultant
 %    velocities and angular velocities, and forms the error vector f(X*).
 %    Then checks convergence. For details, see docstrings of functions
@@ -474,9 +473,12 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     FY = zeros(Np,1);
     TAUZ = zeros(Np,1);
     
-    % Gravity, Cross-Links, Passive Links
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S);
-      
+    % External forces
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs);
+  
+    % Han-Peskin
+    %[FX, FY, T] = cl_forces_hanpeskin_new(FX, FY, X_S, Y_S, N_w, N_pairs, dt, T_S);
+    
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
 

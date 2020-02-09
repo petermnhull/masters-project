@@ -11,6 +11,7 @@ k_b = 1;
 lambda = 3;
 
 for i=1:(N_w - 1)
+
         el_a = cl_el + lambda * ((i - 1) / N_w);
         el_b = cl_el + lambda * (1 - ((i - 1) / N_w));
         
