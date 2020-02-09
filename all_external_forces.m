@@ -4,14 +4,13 @@ FX = FX_IN;
 FY = FY_IN;
 
 % Forces to include
-gravity = false;
 
 passive_links_full = true;
 
 cross_links_trig = false;
 cross_links_linear = false;
-cross_links_linear_osc = false;
-cross_links_han_peskin = true;
+cross_links_linear_osc = true;
+cross_links_han_peskin = false;
 
 external_pinch = false;
 
@@ -29,10 +28,6 @@ k_e = 1;
 %seg_b =  N_w + 8;
 
 % ---- Add Forces ----
-
-if gravity
-    FY = -weight_per_unit_length*L/N_w*ones(Np,1);
-end
     
 % Cross linked forces with variable arc length, trig
 if cross_links_trig

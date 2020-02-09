@@ -18,7 +18,7 @@ function main()
 [save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall] = set_up_graphics();
 
 % filament and fluids data
-[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered] = data();
+[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data();
 
 % iteration process data
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
@@ -474,7 +474,11 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     FY = zeros(Np,1);
     TAUZ = zeros(Np,1);
     
-    % Gravity, Cross-Links, Passive Links
+    if gravity
+        FY = -weight_per_unit_length*L/N_w*ones(Np,1);
+    end
+    
+    % Cross-Links, Passive Links
     [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S);
       
     % Elastic forces
