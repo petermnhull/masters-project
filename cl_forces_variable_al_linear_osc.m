@@ -8,7 +8,7 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;
 k_b = 1;
-lambda = 3;
+lambda = 5;
 
 % Initialise
 t = nt;
@@ -16,8 +16,7 @@ t = nt;
 for i=1:(N_w - 1)
         % Parameters for time component
         reps = 6;
-        scale = 2;
-        time_component = scale * sin(reps * pi * t / TOTAL_STEPS);
+        time_component = sin(reps * pi * t / TOTAL_STEPS);
         
         % Equilibrium lengths
         el_a = cl_el + lambda * time_component * ((i - 1) / N_w);

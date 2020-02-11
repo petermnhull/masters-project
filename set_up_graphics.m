@@ -11,10 +11,10 @@ save_step = 1;                % Save data to file every n timesteps
 
 % Plot centreline and walls of two filaments
 plot_centreline = true;
-plot_walls = true;
+plot_walls = false;
 
 % Line thicknesses
-wdth_centreline = 5;
+wdth_centreline = 10;
 wdth_wall = 5;
 
 % Plot initial conditions
