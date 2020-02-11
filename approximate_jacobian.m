@@ -1,6 +1,6 @@
 function [J0] = approximate_jacobian(THETA, LAMBDA1, LAMBDA2, ...
                   drag_coeff, vistor_coeff, dt, DL, KB_div_DL_array, ...
-                  SW_IND)
+                  SW_IND, mu, a)
 % APPROXIMATE_JACOBIAN  Creates a condensed blockwise Jacobian based on
 %                       analytic expressions given in Appendix B of the
 %                       paper.
@@ -15,7 +15,7 @@ function [J0] = approximate_jacobian(THETA, LAMBDA1, LAMBDA2, ...
 %   Jacobian of each individual filament. Non-block diagonal elements
 %   of the Jacobian are taken care of outside this function by Broyden's
 %   method.
-%
+%   
 %   [J0] = approximate_jacobian(THETA, LAMBDA1, LAMBDA2, ...
 %                               drag_coeff, vistor_coeff, dt, DL, ...
 %                               KB_div_DL_array, SW_IND)
@@ -158,5 +158,6 @@ for i_sw = 1:N_sw
         J0(J+4,k+5:3:j+2) = 2*0.5*DL*cos(THETA(i2top));
     end
 end
+
 
 end

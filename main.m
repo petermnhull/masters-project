@@ -29,7 +29,7 @@ function main()
 %                                                        % file & video file
                                                         
 filename = 'tmp.txt';
-
+ 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
 %   X   is x^(j),   i.e. at current timestep
@@ -203,7 +203,7 @@ for nt = 1:TOTAL_STEPS
     % Find approximate Jacobian J_0
     J0 = approximate_jacobian(THETA, LAMBDA1, LAMBDA2, ...
                               drag_coeff, vis_tor_coeff, dt, ...
-                              DL, KBdivDL, SW_IND);
+                              DL, KBdivDL, SW_IND, mu, a);
 
     % Find J_0^{-1} f(X_k)  (from Alg 2, Line 5)
     J0invERROR_VECk(idx,:) = blockwise_backslash(J0, ...
