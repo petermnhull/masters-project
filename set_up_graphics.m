@@ -5,7 +5,7 @@ function [save_to_file, graphics, video, plot_step, save_step, ...
 % Setup
 save_to_file = true;
 graphics = true;
-video = true;
+video = graphics && true;
 plot_step = 10;                % Plot every n timesteps
 save_step = 1;                % Save data to file every n timesteps
 

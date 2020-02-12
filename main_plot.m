@@ -1,15 +1,12 @@
-function main()
-% MAIN  Supplementary code to 'Methods for suspensions of passive and
-%       active filaments', https://arxiv.org/abs/1903.12609 ,
-%       by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
-%       Visit https://github.com/ekeaveny/filaments/ to find contact
-%       details.
-%       This version: 7 May 2019
+function main_plot()
+%   Supplementary code to 'Methods for suspensions of passive and
+%   active filaments', https://arxiv.org/abs/1903.12609 ,
+%   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
 %
 %   It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the
 %   paper) with a reduced 'robot arm' system of nonlinear equations.
 %
-%   To use, just run this script.
+%   To use, just run main().
 
 % Setup
 [save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall] = set_up_graphics();
@@ -133,6 +130,8 @@ idx = reshape(reshape([1:3*Np],Np,3)',3*Np,1);   % For filament indexing
 
 J0invERROR_VECk = zeros(3*Np,1);   % J_0^{-1} f(X_k)      in Algorithm 2
 J0invERROR_VECk1 = zeros(3*Np,1);  % J_0^{-1} f(X_(k+1))  in Algorithm 2
+
+% Step in time
 
 for nt = 1:TOTAL_STEPS
     iter = 0;
@@ -321,10 +320,15 @@ for nt = 1:TOTAL_STEPS
             LAMBDA2 = LAMBDA2_T;
         end
     end
+    
+    
+    % ------------------ PLOTTING AND SAVING ----------------------
 
     % Plot and save
     plot_now = plot_now + 1;
     save_now = save_now + 1;
+    
+    % ---- SAVE TO FILE ----
 
     if(save_now == save_step && save_to_file)
         %fid = fopen(['output/' filename '.txt'], 'a');
@@ -357,11 +361,15 @@ for nt = 1:TOTAL_STEPS
         fclose(fid);
         %clf;
     end
+    
 
+    % ---- PLOTTING ----
+    
     if(plot_now == plot_step && graphics)
         
         com_X = mean(X_S);
         com_Y = mean(Y_S);
+        
         
         if plot_walls
             % for each filament do the following loop
@@ -454,12 +462,18 @@ if video
     close(Filament_movie);
 end
 
+
+
+
+
+
 % ---------------------------------
 
 % Forces
 function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
                                                    THETA_S, LAMBDA1,...
                                                    LAMBDA2, tol, gam, nt, TOTAL_STEPS, dt)
+                                               
 % F  places forces and torques on the segments, calculates the resultant
 %    velocities and angular velocities, and forms the error vector f(X*).
 %    Then checks convergence. For details, see docstrings of functions
