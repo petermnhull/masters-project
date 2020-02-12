@@ -460,7 +460,6 @@ end
 function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
                                                    THETA_S, LAMBDA1,...
                                                    LAMBDA2, tol, gam, nt, TOTAL_STEPS, dt)
-                                               
 % F  places forces and torques on the segments, calculates the resultant
 %    velocities and angular velocities, and forms the error vector f(X*).
 %    Then checks convergence. For details, see docstrings of functions
