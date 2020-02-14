@@ -1,4 +1,4 @@
-function [FX, FY] = all_external_forces(FX_IN, FY_IN, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S, k, lambda)
+function [FX, FY] = all_external_forces(FX_IN, FY_IN, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S)
 
 FX = FX_IN;
 FY = FY_IN;
@@ -47,7 +47,7 @@ end
 
 % Cross linked forces with variable arc length, linear, swimming
 if cross_links_linear_osc_swimming
-    [FX, FY] = cl_forces_variable_al_linear_swimming(FX, FY, X_S, Y_S, N_w, cl_el, nt, TOTAL_STEPS, k, lambda);
+    [FX, FY] = cl_forces_variable_al_linear_swimming(FX, FY, X_S, Y_S, N_w, cl_el, nt, TOTAL_STEPS);
 end
 
 if cross_links_han_peskin

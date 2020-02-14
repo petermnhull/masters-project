@@ -8,12 +8,12 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;                              % Young's Constant for Active Cross-Link
 k_b = 1;                              % Young's Constant for Passive Cross-Link
-%lambda = 5;                          % Amplitude
+lambda = 5;                          % Amplitude
 
 % Parameters for time component
 gamma = 5;
 omega = 2 * pi * gamma / TOTAL_STEPS;        % undulation freq
-%k = 0.3;                                    % wave number
+k = 0.5;                                    % wave number
 phi = 0;                                     % phase
 
 % Additional tail motion
@@ -23,16 +23,17 @@ tail_motion = false;
 t = nt;
 
 for i=1:(N_w - 1)
-            
-    time_component = sin(k*(i - 1) - omega*t + phi);
-            
+    
+    time_component = k*(i - 1) - omega*t + phi;
+                        
     beta = 1;
     
     if i > (N_w / 2) && tail_motion
         beta = 2 * (1 - (i / N_w));
     end
     
-    el_a = cl_el + lambda * time_component * beta;
+    el_a = cl_el + lambda * sin(time_component) * beta;
+    %el_b = cl_el + lambda * cos(time_component) * beta;
     el_b = cl_el;
 
     % Add forces
