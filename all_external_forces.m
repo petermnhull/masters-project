@@ -7,10 +7,10 @@ FY = FY_IN;
 
 passive_links_full = true;
 
-cross_links_trig = false;
+cross_links_trig = true;
 cross_links_linear = false;
 cross_links_linear_osc = false;
-cross_links_linear_osc_swimming = true;
+cross_links_linear_osc_swimming = false;
 cross_links_han_peskin = false;
 
 external_pinch = false;

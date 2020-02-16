@@ -348,15 +348,17 @@ for nt = 1:TOTAL_STEPS
                 L1 = 0;
                 L2 = 0;
             end
-            %fprintf(fid, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
-            %              '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
-            %             t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
-            %             OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
+            
+            % Print torques, etc. to file
+            fprintf(fid, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
+                          '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
+                         t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
+                         OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
             
             
             % Print just the final time, x position, y position
-            fprintf(fid, ['%.2f %.6f %.6f\n'], ...
-                         t, X(j), Y(j));            
+            %fprintf(fid, ['%.2f %.6f %.6f\n'], t, X(j), Y(j));
+            
         end
         fprintf(fid,'\n');
         fclose(fid);
@@ -377,7 +379,7 @@ for nt = 1:TOTAL_STEPS
             for i_sw = 1:N_sw
                 % scaled by length of filament / nondimensionalising
                 plot((X_S(SW_IND(i_sw,:)))/L, (Y_S(SW_IND(i_sw,:)))/L, ...
-                    '-', 'LineWidth', wdth_wall);
+                    'k-o', 'LineWidth', wdth_wall);
 
                 % added hold on to try and fix problem
                 % this is done so that the axes isn't being cleared
@@ -388,7 +390,7 @@ for nt = 1:TOTAL_STEPS
         if plot_centreline
             for i_pairs = 1:N_pairs
                 plot(((X_S(SW_IND((2*i_pairs) - 1, :)) + X_S(SW_IND(2*i_pairs, :))) / (2 * L)), ((Y_S(SW_IND((2*i_pairs) - 1, :)) + Y_S(SW_IND(2*i_pairs, :))) / (2 * L)), ...
-                            '-', 'LineWidth', wdth_centreline);
+                            'm:', 'LineWidth', wdth_centreline);
                 hold on;
             end
         end
@@ -414,8 +416,8 @@ for nt = 1:TOTAL_STEPS
         ylim([com_Y/L-0.5,com_Y/L+0.5]);
         
         % Labelling
-        xlabel('(x - x_{average}) / L');
-        ylabel('(y - y_{average}) / L');
+        xlabel('x / L');
+        ylabel('y / L');
         axis equal
         
         % Video recording

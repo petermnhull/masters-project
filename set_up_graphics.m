@@ -14,8 +14,8 @@ plot_centreline = true;
 plot_walls = true;
 
 % Line thicknesses
-wdth_centreline = 5;
-wdth_wall = 5;
+wdth_centreline = 2;
+wdth_wall = 3;
 
 % Plot initial conditions
 plot_initial = true;
