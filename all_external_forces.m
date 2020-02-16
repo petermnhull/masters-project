@@ -7,10 +7,10 @@ FY = FY_IN;
 
 passive_links_full = true;
 
-cross_links_trig = true;
+cross_links_trig = false;
 cross_links_linear = false;
 cross_links_linear_osc = false;
-cross_links_linear_osc_swimming = false;
+cross_links_swimming = true;
 cross_links_han_peskin = false;
 
 external_pinch = false;
@@ -46,8 +46,8 @@ if cross_links_linear_osc
 end
 
 % Cross linked forces with variable arc length, linear, swimming
-if cross_links_linear_osc_swimming
-    [FX, FY] = cl_forces_variable_al_linear_swimming(FX, FY, X_S, Y_S, N_w, cl_el, nt, TOTAL_STEPS);
+if cross_links_swimming
+    [FX, FY] = cl_forces_swimming_final(FX, FY, X_S, Y_S, N_w, cl_el, nt, TOTAL_STEPS);
 end
 
 if cross_links_han_peskin

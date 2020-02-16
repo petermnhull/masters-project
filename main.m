@@ -10,7 +10,7 @@ function main()
 % end
 
 
-main_plot();
+main_plot(); 
 
 
 
