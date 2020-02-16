@@ -11,8 +11,8 @@ k_b = 1;
 lambda = 5;
 
 for i=1:(N_w - 1)
-        el_a = cl_el + lambda * sin(pi * (i - 1) / N_w);
-        el_b = cl_el + lambda * cos(pi * (i - 1) / N_w);
+        el_a = cl_el + lambda * sin(pi * (i) / N_w);
+        el_b = cl_el + lambda * cos(pi * (i) / N_w);
             
         [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, i, N_w + i + 1, k_a, el_a);    
         [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, i + 1, N_w + i, k_b, el_b);    

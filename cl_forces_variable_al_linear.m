@@ -8,12 +8,12 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;
 k_b = 1;
-lambda = 3;
+lambda = 5;
 
 for i=1:(N_w - 1)
 
-        el_a = cl_el + lambda * ((i - 1) / N_w);
-        el_b = cl_el + lambda * (1 - ((i - 1) / N_w));
+        el_a = cl_el + lambda * (i / N_w);
+        el_b = cl_el + lambda * (1 - ((i) / N_w));
         
         [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, i, N_w + i + 1, k_a, el_a);    
         [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, i + 1, N_w + i, k_b, el_b);    
