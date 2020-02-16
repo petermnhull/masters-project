@@ -17,24 +17,25 @@ k = 10;                                    % wave number
 phi = 0;                                     % phase
 
 % Additional tail motion
-tail_motion = false;
+tail_motion = true;
 
 % Initialise
 t = nt;
 
 for i=1:(N_w - 1)
     
-    time_component = k*(i/N_w) - omega*t + phi;
+    s = i / N_w;
+    
+    time_component = k*s - omega*t + phi;
                         
     beta = 1;
     
-    if i > ((N_w - 1) / 2) && tail_motion
-        beta = 2 * (1 - (i / N_w));
+    if s > 0.5 && tail_motion
+        beta = 2 * (1 - s);
     end
     
     el_a = cl_el + lambda * beta * sin(time_component);
     el_b = cl_el + lambda * beta * cos(time_component);
-    %el_b = cl_el;
 
     % Add forces
     [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, i, N_w + i + 1, k_a, el_a);    
