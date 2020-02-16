@@ -8,7 +8,7 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;                              % Young's Constant for Active Cross-Link
 k_b = 1;                              % Young's Constant for Passive Cross-Link
-lambda = 5;                          % Amplitude
+lambda = 10;                          % Amplitude
 
 % Parameters for time component
 gamma = 5;
@@ -28,12 +28,12 @@ for i=1:(N_w - 1)
                         
     beta = 1;
     
-    if i > (N_w / 2) && tail_motion
+    if i > ((N_w - 1) / 2) && tail_motion
         beta = 2 * (1 - (i / N_w));
     end
     
-    el_a = cl_el + lambda * sin(time_component) * beta;
-    %el_b = cl_el + lambda * cos(time_component) * beta;
+    el_a = cl_el + lambda * beta * sin(time_component);
+    %el_b = cl_el + lambda * beta * sin(time_component);
     el_b = cl_el;
 
     % Add forces
