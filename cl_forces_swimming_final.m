@@ -1,4 +1,4 @@
-function [FX, FY] = cl_forces_swimming_final(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el, nt, TOTAL_STEPS)
+function [FX, FY] = cl_forces_swimming_final(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el, nt, TOTAL_STEPS, L)
 
 % This function returns a complete asymmetric crosslinked set of forces
 
@@ -36,6 +36,8 @@ for i=1:(N_w - 1)
     
     el_a = cl_el + lambda * beta * sin(time_component);
     el_b = cl_el + lambda * beta * cos(time_component);
+    %el_b = cl_el + lambda * beta * sin(time_component);
+    
 
     % Add forces
     [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, i, N_w + i + 1, k_a, el_a);    

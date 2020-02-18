@@ -8,8 +8,9 @@ function main_plot()
 %
 %   To use, just run main().
 
+
 % Setup
-[save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall] = set_up_graphics();
+[save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
 
 % filament and fluids data
 [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data();
@@ -18,12 +19,9 @@ function main_plot()
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
 
 % filename
-%filename = ['out-'  datestr(now,'yyyymmdd-HHMMSS') '-Nsw' num2str(N_sw) ...
-%            '-Nw' num2str(N_w) '-B' num2str(B) '-RPY']; % used for data
-%                                                        % file & video file
+filename1 = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '_filament_1.txt');
+filename2 = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '_filament_2.txt');
                                                         
-%filename = strcat('k=', num2str(k), ', lambda=', num2str(lambda), '.txt');
-filename = 'tmp.txt'; 
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -149,7 +147,7 @@ for nt = 1:TOTAL_STEPS
 
     % Screen output
     fprintf('\n')
-    if mod(nt,20) == 0
+    if mod(nt,20) == 0 && false
         fprintf(['[' filename ': rEJBb, B=' num2str(B) ', RPY, Nsw=' ...
                  num2str(N_sw) ', Nw=' num2str(N_w) ']\n' ])
     end
@@ -194,7 +192,7 @@ for nt = 1:TOTAL_STEPS
     % Find f(X_k) and place into ERROR_VECk.
     % If ||ERROR_VECk|| < concheck_tol (= epsilon in Alg 2, Line 4),
     % then concheck = 0. Else, 1.
-    [concheck,ERROR_VECk,VY] = F(X_S,Y_S,TX_S,TY_S,THETA_S, LAMBDA1,LAMBDA2,concheck_tol, gam, nt, TOTAL_STEPS, dt);
+    [concheck,ERROR_VECk,VY] = F(X_S,Y_S,TX_S,TY_S,THETA_S, LAMBDA1,LAMBDA2,concheck_tol, gam, nt, TOTAL_STEPS, dt, L);
     % (VY only being outputted here for calculating effective drag later.)
 
     % Find approximate Jacobian J_0
@@ -332,8 +330,8 @@ for nt = 1:TOTAL_STEPS
     % ---- SAVE TO FILE ----
 
     if(save_now == save_step && save_to_file)
-        %fid = fopen(['output/' filename '.txt'], 'a');
-        fid = fopen(filename, 'a');
+        fid1 = fopen(filename1, 'a');
+        fid2 = fopen(filename2, 'a');
         if nt == 1
             %fprintf(fid, 'dt, B, Nsw (RPY)\n');
             %fprintf(fid, '%.6e %.6e %.f\n\n', dt, B, N_sw);
@@ -350,18 +348,26 @@ for nt = 1:TOTAL_STEPS
             end
             
             % Print torques, etc. to file
-            fprintf(fid, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
-                          '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
-                         t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
-                         OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
+            if j <= N_w
+                fprintf(fid1, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
+                              '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
+                             t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
+                             OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
+            else
+                fprintf(fid2, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
+                              '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
+                             t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
+                             OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2); 
+            end
             
-            
-            % Print just the final time, x position, y position
-            %fprintf(fid, ['%.2f %.6f %.6f\n'], t, X(j), Y(j));
             
         end
-        fprintf(fid,'\n');
-        fclose(fid);
+        fprintf(fid1,'\n');
+        fclose(fid1);
+        
+        fprintf(fid2,'\n');
+        fclose(fid2);
+        
         %clf;
     end
     
@@ -372,6 +378,29 @@ for nt = 1:TOTAL_STEPS
         
         com_X = mean(X_S);
         com_Y = mean(Y_S);
+        
+        
+        if plot_links_psv
+            for i=1:N_w
+                seg_c1 = i;
+                seg_c2 = N_w + i;
+                plot([X_S(seg_c1)/L X_S(seg_c2)/L], [Y_S(seg_c1)/L Y_S(seg_c2)/L], 'y-', 'LineWidth', wdth_links);
+                hold on;
+            end
+        end
+        
+        
+        if plot_links
+            for i=1:(N_w - 1)
+                seg_a1 = i;
+                seg_a2 = N_w + 1 + i;
+                seg_b1 = i + 1;
+                seg_b2 = N_w + i;
+                plot([X_S(seg_a1)/L X_S(seg_a2)/L], [Y_S(seg_a1)/L Y_S(seg_a2)/L], 'r-', 'LineWidth', wdth_links);
+                plot([X_S(seg_b1)/L X_S(seg_b2)/L], [Y_S(seg_b1)/L Y_S(seg_b2)/L], 'b-', 'LineWidth', wdth_links);
+                hold on;
+            end
+        end
         
         
         if plot_walls
@@ -387,6 +416,8 @@ for nt = 1:TOTAL_STEPS
             end
         end
         
+        
+        
         if plot_centreline
             for i_pairs = 1:N_pairs
                 plot(((X_S(SW_IND((2*i_pairs) - 1, :)) + X_S(SW_IND(2*i_pairs, :))) / (2 * L)), ((Y_S(SW_IND((2*i_pairs) - 1, :)) + Y_S(SW_IND(2*i_pairs, :))) / (2 * L)), ...
@@ -394,6 +425,9 @@ for nt = 1:TOTAL_STEPS
                 hold on;
             end
         end
+               
+        set(gcf,'defaulttextinterpreter','latex');
+        
 
         % Calculate quantifiers for the filament
         %A_over_L = (max(Y_S) - min(Y_S))/L;
@@ -406,7 +440,7 @@ for nt = 1:TOTAL_STEPS
         %       ', \gamma=' num2str(eff_drag_coeff) ''])
         
         
-        title(['Filament bending using cross-linked forces. nt=' num2str(nt)''])
+        %title(['Filament bending using cross-linked forces. nt=' num2str(nt)''])
 
         hold off
         
@@ -416,8 +450,8 @@ for nt = 1:TOTAL_STEPS
         ylim([com_Y/L-0.5,com_Y/L+0.5]);
         
         % Labelling
-        xlabel('x / L');
-        ylabel('y / L');
+        xlabel('$x / L$');
+        ylabel('$y / L$');
         axis equal
         
         % Video recording
@@ -425,6 +459,12 @@ for nt = 1:TOTAL_STEPS
             frame = getframe(gcf);
             writeVideo(Filament_movie,frame);
             framecount=framecount+1;
+        end
+                
+        if save_plot_to_file
+            axis off
+            saveas(gcf, strcat('frame_', num2str(nt)), 'png')
+            axis on
         end
         
         % Pause on first step
@@ -475,7 +515,7 @@ end
 % Forces
 function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
                                                    THETA_S, LAMBDA1,...
-                                                   LAMBDA2, tol, gam, nt, TOTAL_STEPS, dt)
+                                                   LAMBDA2, tol, gam, nt, TOTAL_STEPS, dt, Lf)
                                                
 % F  places forces and torques on the segments, calculates the resultant
 %    velocities and angular velocities, and forms the error vector f(X*).
@@ -492,7 +532,7 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     end
     
     % Cross-Links, Passive Links
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S, L);
       
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
