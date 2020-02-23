@@ -8,7 +8,7 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;                              % Young's Constant for Active Cross-Link
 k_b = 1;                              % Young's Constant for Passive Cross-Link
-lambda = 5;                          % Amplitude
+lambda = 10;                          % Amplitude
 
 % Parameters for time component
 gamma = 4;

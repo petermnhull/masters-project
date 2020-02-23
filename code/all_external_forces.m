@@ -51,7 +51,7 @@ if cross_links_swimming
 end
 
 if cross_links_han_peskin
-    [FX, FY, T] = cl_forces_hanpeskin_new(FX, FY, X_S, Y_S, N_w, N_pairs, dt, T_S);
+    [FX, FY, T] = cl_forces_hanpeskin_new(FX, FY, X_S, Y_S, N_w, N_pairs, dt, T_S, cl_el);
 end
     
 % Passive Links (every set of segments)
