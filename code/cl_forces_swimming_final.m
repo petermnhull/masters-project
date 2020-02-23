@@ -11,7 +11,7 @@ k_b = 1;                              % Young's Constant for Passive Cross-Link
 lambda = 5;                          % Amplitude
 
 % Parameters for time component
-gamma = 5;
+gamma = 4;
 omega = 2 * pi * gamma / TOTAL_STEPS;        % undulation freq
 k = 10;                                    % wave number
 phi = 0;                                     % phase

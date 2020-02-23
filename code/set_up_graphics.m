@@ -19,7 +19,7 @@ plot_links_psv = plot_links;
 
 % Line thicknesses
 wdth_centreline = 2;
-wdth_wall = 3;
+wdth_wall = 1;
 wdth_links = 1;
 
 % Plot initial conditions

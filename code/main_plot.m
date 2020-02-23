@@ -19,9 +19,7 @@ function main_plot()
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
 
 % filename
-filename1 = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '_filament_1.txt');
-filename2 = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '_filament_2.txt');
-                                                        
+filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');                                                        
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -330,12 +328,7 @@ for nt = 1:TOTAL_STEPS
     % ---- SAVE TO FILE ----
 
     if(save_now == save_step && save_to_file)
-        fid1 = fopen(filename1, 'a');
-        fid2 = fopen(filename2, 'a');
-        if nt == 1
-            %fprintf(fid, 'dt, B, Nsw (RPY)\n');
-            %fprintf(fid, '%.6e %.6e %.f\n\n', dt, B, N_sw);
-        end
+        fid = fopen(filename, 'a');
         
         for j = 1:Np 
             if mod(j,N_w) ~= 0 % i.e. if not the last segment in filament
@@ -348,25 +341,15 @@ for nt = 1:TOTAL_STEPS
             end
             
             % Print torques, etc. to file
-            if j <= N_w
-                fprintf(fid1, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
-                              '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
-                             t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
-                             OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
-            else
-                fprintf(fid2, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
-                              '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
-                             t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
-                             OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2); 
-            end
+            fprintf(fid, ['%.2f %.6f %.6f %.6f %.6f %.6f %.6f '...
+                          '%.6f %.6f %.6f %.6f %.6f %.6f\n'], ...
+                         t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
+                         OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
             
             
         end
-        fprintf(fid1,'\n');
-        fclose(fid1);
-        
-        fprintf(fid2,'\n');
-        fclose(fid2);
+        fprintf(fid,'\n');
+        fclose(fid);
         
         %clf;
     end
@@ -530,6 +513,10 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     if gravity
         FY = -weight_per_unit_length*L/N_w*ones(Np,1);
     end
+    
+    % Forces for finding base case, hydrodynamic efficiency
+    %FY(1) = FY(1) - 1;
+    %FY(N_w + 1) = FY(N_w + 1) - 1;
     
     % Cross-Links, Passive Links
     [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S, L);
