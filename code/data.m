@@ -1,4 +1,4 @@
-function [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data()
+function [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data()
 
 % Number of pairs of filaments
 N_pairs = 1;
@@ -8,6 +8,9 @@ tethered = false;
 
 % Gravity
 gravity = false;
+
+% Base Case
+base_case = false;
 
 % Filament data
 a = 1;                        % segment 'radius' (half filament width)

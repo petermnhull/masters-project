@@ -13,7 +13,7 @@ function main_plot()
 [save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
 
 % filament and fluids data
-[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data();
+[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data();
 
 % iteration process data
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
@@ -514,12 +514,15 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
         FY = -weight_per_unit_length*L/N_w*ones(Np,1);
     end
     
-    % Forces for finding base case, hydrodynamic efficiency
-    %FY(1) = FY(1) - 1;
-    %FY(N_w + 1) = FY(N_w + 1) - 1;
+    if base_case
+        % Forces for finding base case, hydrodynamic efficiency
+        f_epsilon = 0.01;
+        FY(1) = FY(1) - f_epsilon;
+        FY(N_w + 1) = FY(N_w + 1) - f_epsilon;
+    end
     
     % Cross-Links, Passive Links
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, TOTAL_STEPS, dt, T_S, L);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L);
       
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);

@@ -31,8 +31,10 @@ force_x_comp = r_force * cos_alpha;
 force_y_comp = r_force * sin_alpha;
 
 % Apply forces
+% - X component
 FX(segment_a) = FX(segment_a) + force_x_comp;
 FX(segment_b) = FX(segment_b) - force_x_comp;
+% - Y component
 FY(segment_a) = FY(segment_a) + force_y_comp;
 FY(segment_b) = FY(segment_b) - force_y_comp;
 
