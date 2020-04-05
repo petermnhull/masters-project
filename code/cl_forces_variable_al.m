@@ -1,4 +1,4 @@
-function [FX, FY] = cl_forces_variable_al(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el)
+function [FX, FY] = cl_forces_variable_al(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el, L)
 
 % This function returns a complete asymmetric crosslinked set of forces
 
@@ -8,7 +8,7 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;
 k_b = 1;
-lambda = 5;
+lambda = L/10;
 
 for i=1:(N_w - 1)
         el_a = cl_el + lambda * sin(pi * (i) / N_w);

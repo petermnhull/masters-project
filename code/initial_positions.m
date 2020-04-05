@@ -1,44 +1,47 @@
-function [X, Y, THETA] = initial_positions(X_IN, Y_IN, THETA_IN, N_w, N_sw, filament_separation)
+function [X, Y, THETA] = initial_positions(X_IN, Y_IN, THETA_IN, N_w, N_sw, filament_separation, N_pairs, L)
+
+% --- INITIAL POSITIONING ---
+
+% X positions of left filament of each pair
+% x_left = [0, -10, -L/8, -L/1.5, -L/3];
+% y_left = [5, 5, -L/7, -L/2, -10];
+x_right = zeros(N_pairs);
+y_right = zeros(N_pairs);
+
+% Angles
+displacement_theta = pi/2;
+% alpha = [pi - 0.05, pi/2 + 0.01, 3*pi/4, 3*pi/5, 3*pi/5.5];
+
+% SINGLE EXAMPLE
+x_left = [0];
+y_left = [0];
+alpha = [0];
+% ---------------------------
+
 
 X = X_IN;
 Y = Y_IN;
 THETA = THETA_IN;
 
-% Initial angle displacement
-displacement_theta = pi / 2;
-
-% Additional perturbations
-curved_filaments = false;
-perturbed = false;
-
-
-for j=1:N_sw
+for i_pairs=1:N_pairs
     for i=1:N_w
-        THETA(i + (j-1)*N_w) = displacement_theta;
-        
-        % Curve the filaments
-        if curved_filaments
-            THETA(i + (j - 1)*N_w) = THETA(i + (j - 1)*N_w) + i*pi/N_w;
-        end
+        seg_a = (((2 * i_pairs) - 2) * N_w) + i;
+        seg_b = (((2 * i_pairs) - 2) * N_w) + N_w + i;
+
+        THETA(seg_a) = displacement_theta + alpha(i_pairs);
+        THETA(seg_b) = displacement_theta + alpha(i_pairs);
     end
 end
 
-% Perturbation of initial position
-if perturbed
-    THETA(1) = 0.00001;
-end
-
-% Position filaments an even distance away from eachother
-x_pos = 0;
-for i=1:N_sw
-    x_pos = x_pos + filament_separation;
+for i_pairs=1:N_pairs
+    seg_a = (((2 * i_pairs) - 2) * N_w) + 1;
+    seg_b = (((2 * i_pairs) - 2) * N_w) + N_w + 1;
     
-    X(1+(i-1)*N_w) = x_pos;
+    x_right(i_pairs) = x_left(i_pairs) + (filament_separation * cos(alpha(i_pairs)));
+    y_right(i_pairs) = y_left(i_pairs) + (filament_separation * sin(alpha(i_pairs)));
+    
+    X(seg_a) = x_left(i_pairs);
+    X(seg_b) = x_right(i_pairs);
+    Y(seg_a) = y_left(i_pairs);
+    Y(seg_b) = y_right(i_pairs);
 end
-
-%X(1) = 0;
-%X(N_w + 1) = 5;
-%X(2*N_w + 1) = 12;
-%X(3*N_w + 1) = 17;
-%X(4*N_w + 1) = 24;
-%X(5*N_w + 1) = 29;

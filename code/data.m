@@ -1,4 +1,4 @@
-function [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data()
+function [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input)
 
 % Number of pairs of filaments
 N_pairs = 1;
@@ -15,7 +15,7 @@ base_case = false;
 % Filament data
 a = 1;                        % segment 'radius' (half filament width)
 N_sw = 2 * N_pairs;           % number of filaments
-N_w = 31;                     % number of segments in filament (21)
+N_w = N_input;                     % number of segments in filament (21)
 Np = N_sw*N_w;                % total number of segments
 N_lam = N_sw*(N_w - 1);       % number of lambdas
 

@@ -1,4 +1,4 @@
-function main_plot()
+function main_plot(p)
 %   Supplementary code to 'Methods for suspensions of passive and
 %   active filaments', https://arxiv.org/abs/1903.12609 ,
 %   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
@@ -12,14 +12,17 @@ function main_plot()
 % Setup
 [save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
 
+N_input = 51;
+
 % filament and fluids data
-[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data();
+[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input);
 
 % iteration process data
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
 
 % filename
-filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');                                                        
+%filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
+filename = strcat('tail_amp=', num2str(p), '.txt');
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -55,7 +58,7 @@ PtoS = floor([0:Np-1]./N_w)+1;
 % (We are happy with the default positon of [X,Y]=[0,0] and default
 %  orientation of THETA=0 but you can change this here.)
 filament_separation = 5;
-[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation);
+[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, L);
 
 % Having placed the first segment of each filament and set their
 % orientation, use robot_arm to construct the position of the remaining
@@ -364,24 +367,28 @@ for nt = 1:TOTAL_STEPS
         
         
         if plot_links_psv
-            for i=1:N_w
-                seg_c1 = i;
-                seg_c2 = N_w + i;
-                plot([X_S(seg_c1)/L X_S(seg_c2)/L], [Y_S(seg_c1)/L Y_S(seg_c2)/L], 'y-', 'LineWidth', wdth_links);
-                hold on;
+            for i_pairs=1:N_pairs
+                for i=1:N_w
+                    seg_c1 = (((2 * i_pairs) - 2) * N_w) + i;
+                    seg_c2 = (((2 * i_pairs) - 1) * N_w) + i;
+                    plot([X_S(seg_c1)/L X_S(seg_c2)/L], [Y_S(seg_c1)/L Y_S(seg_c2)/L], 'y-', 'LineWidth', wdth_links);
+                    hold on;
+                end
             end
         end
         
         
         if plot_links
-            for i=1:(N_w - 1)
-                seg_a1 = i;
-                seg_a2 = N_w + 1 + i;
-                seg_b1 = i + 1;
-                seg_b2 = N_w + i;
-                plot([X_S(seg_a1)/L X_S(seg_a2)/L], [Y_S(seg_a1)/L Y_S(seg_a2)/L], 'r-', 'LineWidth', wdth_links);
-                plot([X_S(seg_b1)/L X_S(seg_b2)/L], [Y_S(seg_b1)/L Y_S(seg_b2)/L], 'b-', 'LineWidth', wdth_links);
-                hold on;
+            for i_pairs=1:N_pairs
+                for i=1:(N_w - 1)
+                    seg_a1 = (((2 * i_pairs) - 2) * N_w) + i;
+                    seg_a2 = (((2 * i_pairs) - 2) * N_w) + N_w + 1 + i;
+                    seg_b1 = (((2 * i_pairs) - 2) * N_w) + i + 1;
+                    seg_b2 = (((2 * i_pairs) - 2) * N_w) + N_w + i;
+                    plot([X_S(seg_a1)/L X_S(seg_a2)/L], [Y_S(seg_a1)/L Y_S(seg_a2)/L], 'r-', 'LineWidth', wdth_links);
+                    plot([X_S(seg_b1)/L X_S(seg_b2)/L], [Y_S(seg_b1)/L Y_S(seg_b2)/L], 'b-', 'LineWidth', wdth_links);
+                    hold on;
+                end
             end
         end
         
@@ -391,15 +398,13 @@ for nt = 1:TOTAL_STEPS
             for i_sw = 1:N_sw
                 % scaled by length of filament / nondimensionalising
                 plot((X_S(SW_IND(i_sw,:)))/L, (Y_S(SW_IND(i_sw,:)))/L, ...
-                    'k-o', 'LineWidth', wdth_wall);
+                    'k-', 'LineWidth', wdth_wall);
 
                 % added hold on to try and fix problem
                 % this is done so that the axes isn't being cleared
                 hold on;
             end
         end
-        
-        
         
         if plot_centreline
             for i_pairs = 1:N_pairs
@@ -429,8 +434,9 @@ for nt = 1:TOTAL_STEPS
         
         % Aspect ratios
         pbaspect([1 1 1])
-        xlim([com_X/L-0.5,com_X/L+0.5]);
-        ylim([com_Y/L-0.5,com_Y/L+0.5]);
+        limit = 0.5; % originally 0.5, 1.2 for multiple swimmers
+        xlim([com_X/L - limit, com_X/L + limit]);
+        ylim([com_Y/L - limit, com_Y/L + limit]);
         
         % Labelling
         xlabel('$x / L$');
@@ -516,13 +522,13 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     
     if base_case
         % Forces for finding base case, hydrodynamic efficiency
-        f_epsilon = 0.01;
+        f_epsilon = 0.5;
         FY(1) = FY(1) - f_epsilon;
         FY(N_w + 1) = FY(N_w + 1) - f_epsilon;
     end
     
     % Cross-Links, Passive Links
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, p);
       
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
