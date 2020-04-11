@@ -8,7 +8,7 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;                              % Young's Constant for Active Cross-Link
 k_b = 1;                              % Young's Constant for Passive Cross-Link
-lambda_s = 50;            % standard is 25
+lambda_s = 10;            % standard is 10/25
 lambda = L / lambda_s;                    % Amplitude
 
 % Parameters for time component
@@ -21,7 +21,7 @@ phi = 0;                                     % phase
 % --- ADDITIONAL BEHAVIOUR
 % Additional tail motion
 tail_motion = false;
-tail_motion_more = true;
+tail_motion_more = false;
 
 % Variation of amplitude
 var_ampl = false;
@@ -31,8 +31,8 @@ lambda_ss = [10, 25, 100, 40];
 var_direction = false;
 
 % Variation of phases
-var_phase = false;
-phis = [0, pi/3, pi/9, pi/5, pi/2];
+var_phase = true;
+phis = [0, pi/2, pi/9, pi/5, pi/2];
 
 % Initialise
 t = nt;

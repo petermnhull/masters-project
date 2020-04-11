@@ -1,7 +1,7 @@
-function [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input)
+function [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input, N_pairs_input)
 
 % Number of pairs of filaments
-N_pairs = 1;
+N_pairs = N_pairs_input;
 
 % Tethering
 tethered = false;

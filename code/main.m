@@ -1,10 +1,9 @@
  function main()
 
- 
-tail_amp = 10;
+N_pairs = [2];
   
-for t=tail_amp
-    main_plot(t);
+for N=N_pairs
+    main_plot(N);
 end
 
  
