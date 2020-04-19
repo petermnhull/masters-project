@@ -8,3 +8,5 @@ Original repository (accessed 1 October 2019): https://github.com/ekeaveny/filam
 This original code demonstrates the use of the method described [here](https://arxiv.org/abs/1903.12609) in simulating a single flexible filament falling under gravity in an infinite domain. This version adapts the code for modelling the dynamics of swimming microorganisms in Stokes flow.
 
 It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the paper) with a reduced 'robot arm' system of nonlinear equations. For the hydrodynamic solver, it uses the RPY tensors.
+
+## Instructions
