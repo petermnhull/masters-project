@@ -8,39 +8,33 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;                              % Young's Constant for Active Cross-Link
 k_b = 1;                              % Young's Constant for Passive Cross-Link
-lambda_s = 10;            % standard is 10/25
+lambda_s = 6.25;            % standard is 10 or 25
 lambda = L / lambda_s;                    % Amplitude
 
 % Parameters for time component
 gamma = 5;
 omega = 2 * pi * gamma / steps_per_unit_time;   % undulation freq
-k_s = 100; %standard is 100
-k = k_s * 2 * pi / L;                                    % wave number
+%k_s = 100 / L; %standard is 100 / L
+k_s = p;
+k = k_s * 2 * pi;                                    % wave number
 phi = 0;                                     % phase
 
 % --- ADDITIONAL BEHAVIOUR
 % Additional tail motion
-tail_motion = false;
+tail_motion = true;
 tail_motion_more = false;
-
-% Variation of amplitude
-var_ampl = false;
-lambda_ss = [10, 25, 100, 40];
 
 % Opposite directions
 var_direction = false;
 
 % Variation of phases
-var_phase = true;
+var_phase = false;
 phis = [0, pi/2, pi/9, pi/5, pi/2];
 
 % Initialise
 t = nt;
 
 for i_pairs=1:N_pairs
-    if var_ampl
-        lambda = L / lambda_ss(i_pairs);
-    end
     
     for i=1:(N_w - 1)
     
@@ -69,11 +63,13 @@ for i_pairs=1:N_pairs
 
         if s > 0.5 && tail_motion
             beta = 2 * (1 - s);
-            %beta = (2*(p - 1)*s) + 2 - p;           % <--- wiggly tails
+            %param = 4;
+            %beta = (2*(param - 1)*s) + 2 - param;           % <--- wiggly tails
         end
         
         if s > 0.25 && tail_motion_more
-           beta = (1 / 15) * (16*(p - 1)*s^2 + 16 - p); % <--- very wiggly tails 
+           param = 4;
+           beta = (1 / 15) * (16*(param - 1)*s^2 + 16 - param); % <--- very wiggly tails 
            %beta = (64/63)*(p - 1)*s^3 + p - (64/63)*(p - 1); % <--- very very wiggly tails
         end
 

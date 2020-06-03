@@ -21,7 +21,7 @@ external_pinch = false;
 cl_el = sqrt(filament_separation^2 + DL^2);
 
 % Constant for full passive links
-k_f = 10;
+k_f = 10; %10
 
 % Constants for external pinch
 k_e = 1;

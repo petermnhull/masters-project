@@ -8,12 +8,12 @@ function main_plot(p)
 %
 %   To use, just run main().
 
-
+% test
 % Setup
 [save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
 
 N_input = 31;
-N_pairs_input = p;
+N_pairs_input = 1;
 
 % filament and fluids data
 [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input, N_pairs_input);
@@ -22,8 +22,8 @@ N_pairs_input = p;
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
 
 % filename
-filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
-%filename = strcat('N_pairs=', num2str(p), '.txt');
+%filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
+filename = strcat('ks=', num2str(p), '.txt');
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -399,7 +399,7 @@ for nt = 1:TOTAL_STEPS
             for i_sw = 1:N_sw
                 % scaled by length of filament / nondimensionalising
                 plot((X_S(SW_IND(i_sw,:)))/L, (Y_S(SW_IND(i_sw,:)))/L, ...
-                    'k-', 'LineWidth', wdth_wall);
+                    'k', 'LineWidth', wdth_wall);
 
                 % added hold on to try and fix problem
                 % this is done so that the axes isn't being cleared

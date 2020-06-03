@@ -4,11 +4,11 @@ function [save_to_file, graphics, video, plot_step, save_step, ...
 
 % Setup
 save_to_file = true;
-graphics = true;
-video = graphics && true;
-plot_step = 100;              % Plot every n timesteps
+graphics = false;
+video = graphics;
+plot_step = 10;              % Plot every n timesteps
 save_step = 1;                % Save data to file every n timesteps
-save_plot_to_file = graphics && true;
+save_plot_to_file = false;
 
 
 % Plot centreline and walls of two filaments
@@ -18,9 +18,9 @@ plot_links = true;
 plot_links_psv = plot_links;
 
 % Line thicknesses
-wdth_centreline = 2;
-wdth_wall = 1;
-wdth_links = 1;
+wdth_centreline = 5;  % 2
+wdth_wall = 1;    % 1
+wdth_links = 1;   % 1
 
 % Plot initial conditions
 plot_initial = true;

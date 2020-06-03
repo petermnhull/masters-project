@@ -3,19 +3,18 @@ function [X, Y, THETA] = initial_positions(X_IN, Y_IN, THETA_IN, N_w, N_sw, fila
 % --- INITIAL POSITIONING ---
 
 % X positions of left filament of each pair
-% x_left = [0, -10, -L/8, -L/1.5, -L/3];
-% y_left = [5, 5, -L/7, -L/2, -10];
 x_right = zeros(N_pairs);
 y_right = zeros(N_pairs);
 
 % Angles
 displacement_theta = pi/2;
-% alpha = [pi - 0.05, pi/2 + 0.01, 3*pi/4, 3*pi/5, 3*pi/5.5];
 
-% SINGLE EXAMPLE
-x_left = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-y_left = [0, 7.5, 15, 22.5, 30, 37.5, 45, 52.5, 60, 67.5];
-alpha = [pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2];
+% Positions
+
+x_left = [0];
+y_left = [0];
+alpha = [0];
+
 
 % ---------------------------
 

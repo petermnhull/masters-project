@@ -25,7 +25,7 @@ weight_per_unit_length = 1e0;  % weight per unit length W
 DL_factor = 2.2;               % 2.2               
 DL = DL_factor*a;              % distance between segment centres, Delta L
 L = N_w*DL;                    % filament length L
-mu = 10;                       % fluid viscosity
+mu = 10;                       % Adjustment of settling time, only relevant for sedimenting filaments
 
 KB = weight_per_unit_length*L^3/B;         % bending modulus, K_B
 KBdivDL = KB/DL;

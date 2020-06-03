@@ -8,7 +8,7 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;
 k_b = 1;
-lambda = L / 10;
+lambda = 1;
 
 for i=1:(N_w - 1)
 
