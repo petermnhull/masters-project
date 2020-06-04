@@ -1,4 +1,4 @@
-function main_plot(p)
+function main_plot(p, q)
 %   Supplementary code to 'Methods for suspensions of passive and
 %   active filaments', https://arxiv.org/abs/1903.12609 ,
 %   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
@@ -23,7 +23,7 @@ N_pairs_input = 1;
 
 % filename
 %filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
-filename = strcat('ks=', num2str(p), '.txt');
+filename = strcat('ks=', num2str(p), ',ls=', num2str(q), '.txt');
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -529,7 +529,7 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     end
     
     % Cross-Links, Passive Links
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, p);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, p, q);
       
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);

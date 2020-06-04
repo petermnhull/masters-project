@@ -1,4 +1,4 @@
-function [FX, FY] = cl_forces_swimming_final(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el, nt, L, steps_per_unit_time, p, N_pairs)
+function [FX, FY] = cl_forces_swimming_final(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el, nt, L, steps_per_unit_time, p, q, N_pairs)
 
 % This function returns a complete asymmetric crosslinked set of forces
 
@@ -8,7 +8,7 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;                              % Young's Constant for Active Cross-Link
 k_b = 1;                              % Young's Constant for Passive Cross-Link
-lambda_s = 6.5;            % standard is 10 or 25
+lambda_s = q;            % standard is 10 or 25
 lambda = L / lambda_s;                    % Amplitude
 
 % Parameters for time component
@@ -21,7 +21,7 @@ phi = 0;                                     % phase
 
 % --- ADDITIONAL BEHAVIOUR
 % Additional tail motion
-tail_motion = true;
+tail_motion = false;
 tail_motion_more = false;
 
 % Opposite directions
