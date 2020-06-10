@@ -3,6 +3,9 @@ function [FX, FY, T] = cl_forces_hanpeskin_new(FX_IN, FY_IN, X_IN, Y_IN, N_w, N_
 % This function returns a complete asymmetric crosslinked set of forces,
 % according to Han Peskin paper
 
+% Proof of concept, however the use is limited by absence of tethering
+% which is very intensive for the hydrodynamic solver.
+
 % For use with pairs of filaments
 
 FX = FX_IN;
@@ -33,7 +36,6 @@ t = nt;
                        
             % Update tension - Forward Euler
             T_OUT(seg_a) = T_IN(seg_a) + (dt * beta * ((k * (nthroot(r_dist, 2) - T_IN(seg_a)))));
-            %T_OUT(seg_a) = T_IN(seg_a) + (dt * beta * ((k * (r_dist^2) - T_IN(seg_a))));
             
             % Resolve forces
             % - angles for x and y components
@@ -50,9 +52,6 @@ t = nt;
             FY(seg_a) = FY(seg_a) + T_y;
             FY(seg_b) = FY(seg_b) + T_y;
             
-            
-            %[FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, i + 1, N_w + i, 10, cl_el);    
-
     end
     
     T = T_OUT;
