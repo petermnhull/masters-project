@@ -1,4 +1,4 @@
-function main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomotion_type)
+function main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomotion_type, filename, save_to_file, limit)
 %   Supplementary code to 'Methods for suspensions of passive and
 %   active filaments', https://arxiv.org/abs/1903.12609 ,
 %   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
@@ -10,7 +10,7 @@ function main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomot
 
 % test
 % Setup
-[save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
+[graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
 
 N_input = 31;
 N_pairs_input = N_swimmers;
@@ -19,14 +19,7 @@ N_pairs_input = N_swimmers;
 [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data(N_input, N_pairs_input);
 
 % iteration process data
-[max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
-
-% For plots
-limit = 0.5; % originally 0.5, 1.2 for multiple swimmers
-
-
-% filename
-filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
+[max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);   
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -62,7 +55,7 @@ PtoS = floor([0:Np-1]./N_w)+1;
 % (We are happy with the default positon of [X,Y]=[0,0] and default
 %  orientation of THETA=0 but you can change this here.)
 filament_separation = 5;
-[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, L, x, y, alpha);
+[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, x, y, alpha);
 
 % Having placed the first segment of each filament and set their
 % orientation, use robot_arm to construct the position of the remaining

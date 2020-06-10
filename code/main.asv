@@ -2,7 +2,6 @@
 
 N_swimmers = 1;
 
-% ----- Parameters for swimmers -----
 % Initial positions of each swimmer
 x = [0];
 y = [0];
@@ -18,15 +17,17 @@ zeta = 0.5;
 locomotion_type = 4;
 
 
-% ----- Plotting and Saving ------
+
 % For plots
-limit = 0.5;    % 0.5 for individuals, and 1 for multiple
+limit = 0.5; % originally 0.5, 1.2 for multiple swimmers
+
+% filename
 filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');  
-save_to_file = false;
+save_to_file = true
 
 
 % Run simulation 
-main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomotion_type, filename, save_to_file, limit);
+main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomotion_type);
 
 
 

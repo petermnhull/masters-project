@@ -1,4 +1,4 @@
-function [X, Y, THETA] = initial_positions(X_IN, Y_IN, THETA_IN, N_w, N_sw, filament_separation, N_pairs, L, x_left, y_left, alpha)
+function [X, Y, THETA] = initial_positions(X_IN, Y_IN, THETA_IN, N_w, N_sw, filament_separation, N_pairs, x_left, y_left, alpha)
 
 % --- INITIAL POSITIONING ---
 
