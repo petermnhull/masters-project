@@ -2,7 +2,7 @@
 
 Adaptation of an existing single filament model for modelling a two-dimensional microswimmer axoneme. The axoneme is comprised of two Kirchhoff filaments inter-connected through a series of cross-links that generate internal driving forces for movement. The code is set up for easy use so that multiple swimmers with different behaviours can be simulated.
 
-This code adapts the method described [here](https://arxiv.org/abs/1903.12609) in simulating a single flexible filament falling under gravity in an infinite domain.  It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the paper) with a reduced 'robot arm' system of nonlinear equations. For the hydrodynamic solver, it uses the RPY tensors.
+The code uses the method described [here](https://arxiv.org/abs/1903.12609) for modelling a single kirchhoff filament falling under gravity. It uses the EJBb version of Broyden's method with a reduced system of nonlinear equations. For solving the hydrodynamic forces it uses the RPY tensor.
 
 Original repository for single filaments falling under gravity (accessed 1 October 2019): https://github.com/ekeaveny/filaments/tree/master/matlab-2d-rpy
 
