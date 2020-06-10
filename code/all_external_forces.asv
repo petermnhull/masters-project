@@ -1,9 +1,12 @@
-function [FX, FY] = all_external_forces(FX_IN, FY_IN, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, lambda_s, k_s, beta_A, zeta, locomotion_type, gamma, phi, passive_links)
+function [FX, FY] = all_external_forces(FX_IN, FY_IN, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, lambda_s, k_s, beta_A, zeta, locomotion_type, gamma, phi)
 
 FX = FX_IN;
 FY = FY_IN;
 
 % Forces to include
+
+passive_links_full = true;
+
 cross_links_swimming = true;
 cross_links_han_peskin = false;
 
@@ -27,7 +30,7 @@ end
     
 % Passive Links (every set of segments)
 % - for use with pairs of filaments
-if passive_links
+if passive_links_full
     for i_pairs=1:N_pairs
         for j=1:N_w
             seg_a = (((2 * i_pairs) - 2) * N_w) + j;
