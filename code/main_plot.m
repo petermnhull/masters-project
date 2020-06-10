@@ -1,4 +1,4 @@
-function main_plot(N_swimmers, p, q)
+function main_plot(N_swimmers, x, y, alpha)
 %   Supplementary code to 'Methods for suspensions of passive and
 %   active filaments', https://arxiv.org/abs/1903.12609 ,
 %   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
@@ -63,7 +63,7 @@ PtoS = floor([0:Np-1]./N_w)+1;
 % (We are happy with the default positon of [X,Y]=[0,0] and default
 %  orientation of THETA=0 but you can change this here.)
 filament_separation = 5;
-[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, L);
+[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, L, x, y, alpha);
 
 % Having placed the first segment of each filament and set their
 % orientation, use robot_arm to construct the position of the remaining

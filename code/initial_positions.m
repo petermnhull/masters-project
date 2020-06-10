@@ -1,23 +1,13 @@
-function [X, Y, THETA] = initial_positions(X_IN, Y_IN, THETA_IN, N_w, N_sw, filament_separation, N_pairs, L)
+function [X, Y, THETA] = initial_positions(X_IN, Y_IN, THETA_IN, N_w, N_sw, filament_separation, N_pairs, L, x_left, y_left, alpha)
 
 % --- INITIAL POSITIONING ---
 
-% X positions of left filament of each pair
+% Initialise positions of left filament of each pair
 x_right = zeros(N_pairs);
 y_right = zeros(N_pairs);
 
 % Angles
 displacement_theta = pi/2;
-
-% Positions
-
-x_left = [0];
-y_left = [0];
-alpha = [0];
-
-x_left = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-y_left = [0, 7.5, 15, 22.5, 30, 37.5, 45, 52.5, 60, 67.5];
-alpha = [pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2, pi/2];
 
 % ---------------------------
 
