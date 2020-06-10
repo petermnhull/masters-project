@@ -10,3 +10,11 @@ This original code demonstrates the use of the method described [here](https://a
 It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the paper) with a reduced 'robot arm' system of nonlinear equations. For the hydrodynamic solver, it uses the RPY tensors.
 
 ## Instructions
+1. Clone repository.
+2. Open main_plot.m
+3. Choose parameters: number of swimmers, driving force amplitude, wavenumber, beta_A, zeta.
+4. Choose whether to save velocities, etc. to file.
+5. Run!
+
+## Additional Instructions
+- Access set_up_graphics.m to change the plotting, and to disable graphics or saving video to file.
