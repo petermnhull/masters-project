@@ -3,13 +3,12 @@ function [save_to_file, graphics, video, plot_step, save_step, ...
     wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics()
 
 % Setup
-save_to_file = true;
-graphics = false;
+save_to_file = false;
+graphics = true;
 video = graphics;
-plot_step = 10;              % Plot every n timesteps
+plot_step = 10;          % Plot every n timesteps
 save_step = 1;                % Save data to file every n timesteps
-save_plot_to_file = false;
-
+save_plot_to_file = true;
 
 % Plot centreline and walls of two filaments
 plot_centreline = false;

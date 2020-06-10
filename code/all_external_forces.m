@@ -13,8 +13,6 @@ cross_links_linear_osc = false;
 cross_links_swimming = true;
 cross_links_han_peskin = false;
 
-external_pinch = false;
-
 % -- PARAMETERS (NOT FOR HAN PESKIN)--
 
 % Cross link equilibrium length
@@ -23,10 +21,6 @@ cl_el = sqrt(filament_separation^2 + DL^2);
 % Constant for full passive links
 k_f = 10; %10
 
-% Constants for external pinch
-k_e = 1;
-%seg_a =  N_w + 3;
-%seg_b =  N_w + 8;
 
 % ---- Add Forces ----
     
@@ -65,9 +59,4 @@ if passive_links_full
             [FX, FY] = add_spring_force_between_segments(FX, FY, X_S, Y_S, seg_a, seg_b, k_f, filament_separation);
         end
     end
-end
-   
-% External pinch
-if external_pinch
-    [FX, FY] = add_spring_force_between_segments(FX, FY, X_S, Y_S, seg_a, seg_b, k_e, filament_separation);
 end

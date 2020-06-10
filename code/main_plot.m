@@ -1,4 +1,4 @@
-function main_plot(p, q)
+function main_plot(N_swimmers, p, q)
 %   Supplementary code to 'Methods for suspensions of passive and
 %   active filaments', https://arxiv.org/abs/1903.12609 ,
 %   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
@@ -13,7 +13,7 @@ function main_plot(p, q)
 [save_to_file, graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
 
 N_input = 31;
-N_pairs_input = 1;
+N_pairs_input = N_swimmers;
 
 % filament and fluids data
 [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input, N_pairs_input);
@@ -21,9 +21,13 @@ N_pairs_input = 1;
 % iteration process data
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
 
+% For plots
+limit = 0.5; % originally 0.5, 1.2 for multiple swimmers
+
+
 % filename
 %filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
-filename = strcat('ks=', num2str(p), ',ls=', num2str(q), '.txt');
+filename = strcat('N_swimmers=', num2str(N_pairs_input), ',zeta=', num2str(p), 'beta=', num2str(q).txt');
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -108,7 +112,7 @@ RAD = a*ones(Np,1);         % Segment size vector (a = filament thickness)
 DeltaX = zeros(3*Np,1);
 
 % Time
-unit_time = L*mu/weight_per_unit_length;   % 1 settling time, T
+unit_time = L*mu/weight_per_unit_length;
 TOTAL_STEPS = num_settling_times*steps_per_unit_time;
 dt = unit_time/steps_per_unit_time;
 t = 0;
@@ -350,7 +354,6 @@ for nt = 1:TOTAL_STEPS
                          t, X(j), Y(j), TX(j), TY(j), VX(j), VY(j), ...
                          OMEGZ(j), FX(j), FY(j), TAUZ(j), L1, L2);
             
-            
         end
         fprintf(fid,'\n');
         fclose(fid);
@@ -416,26 +419,11 @@ for nt = 1:TOTAL_STEPS
         end
                
         set(gcf,'defaulttextinterpreter','latex');
-        
-
-        % Calculate quantifiers for the filament
-        %A_over_L = (max(Y_S) - min(Y_S))/L;
-        %body_velocity_Y = mean(VY);
-        %eff_drag_coeff = -weight_per_unit_length*L/body_velocity_Y;
-        
-        %title(['nt='  num2str(nt)  ', dt='  num2str(dt) ...
-        %       ', B='  num2str(B)  ', N_{sw}='  num2str(N_sw) ...
-        %       ', A/L=' num2str(A_over_L) ...
-        %       ', \gamma=' num2str(eff_drag_coeff) ''])
-        
-        
-        %title(['Filament bending using cross-linked forces. nt=' num2str(nt)''])
-
+          
         hold off
         
         % Aspect ratios
         pbaspect([1 1 1])
-        limit = 0.5; % originally 0.5, 1.2 for multiple swimmers
         xlim([com_X/L - limit, com_X/L + limit]);
         ylim([com_Y/L - limit, com_Y/L + limit]);
         
