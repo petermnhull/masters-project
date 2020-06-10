@@ -1,13 +1,10 @@
 # Masters Project
 
-Adaptation of an existing filament model as a two-wall sliding filament model, using cross-linked forces between two Kirchhoff rods to model passive links and active motor protein links as seen in biological axonemal architecture of the flagellum.
+Adaptation of an existing filament model for a model two-dimensional microswimmer axoneme. The axoneme is comprised of two Kirchhoff filaments inter-connected through a series of cross-links that generate internal driving forces for movement. The code is set up for easy use so that multiple swimmers with different behaviours can be simulated.
 
-Original repository (accessed 1 October 2019): https://github.com/ekeaveny/filaments/tree/master/matlab-2d-rpy
+This code adapts the method described [here](https://arxiv.org/abs/1903.12609) in simulating a single flexible filament falling under gravity in an infinite domain.  It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the paper) with a reduced 'robot arm' system of nonlinear equations. For the hydrodynamic solver, it uses the RPY tensors.
 
-## Overview
-This original code demonstrates the use of the method described [here](https://arxiv.org/abs/1903.12609) in simulating a single flexible filament falling under gravity in an infinite domain. This version adapts the code for modelling the dynamics of swimming microorganisms in Stokes Flow.
-
-It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the paper) with a reduced 'robot arm' system of nonlinear equations. For the hydrodynamic solver, it uses the RPY tensors.
+Original repository for single filaments falling under gravity (accessed 1 October 2019): https://github.com/ekeaveny/filaments/tree/master/matlab-2d-rpy
 
 ## Instructions
 1. Clone repository.
