@@ -1,4 +1,4 @@
-function [FX, FY] = cl_forces_swimming_final(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el, nt, L, steps_per_unit_time, p, q, N_pairs)
+function [FX, FY] = cl_forces_swimming_final(FX_IN, FY_IN, X_IN, Y_IN, N_w, cl_el, nt, L, steps_per_unit_time, N_pairs, lambda_s, k_s, beta_A, zeta, locomotion_type)
 
 % This function returns a complete asymmetric crosslinked set of forces
 
@@ -8,32 +8,16 @@ FY = FY_IN;
 % Constants for cross links (linear and trig)
 k_a = 1;                              % Young's Constant for Active Cross-Link
 k_b = 1;                              % Young's Constant for Passive Cross-Link
-lambda_s = 25;            % standard is 10 or 25
 lambda = L / lambda_s;                    % Amplitude
 
 % Parameters for time component
-gamma = 5;
+gamma = 5;                                      % Undulations per unit time
 omega = 2 * pi * gamma / steps_per_unit_time;   % undulation freq
-k_s = 100 / L; %standard is 100 / L
-k = k_s * 2 * pi;                                    % wave number
-phi = 0;                                     % phase
+k = k_s * 2 * pi;                               % angular wave number
+phi = 0;                                        % phase
 
-% --- ADDITIONAL BEHAVIOUR
 % Additional tail motion
-tail_motion = false;
-wiggly_tail_motion = false;
-tail_motion_more = false;
-
 tail_final = true;
-B_a = 1;
-zeta = 1;
-
-% Opposite directions
-var_direction = false;
-
-% Variation of phases
-var_phase = false;
-phis = [0, pi/2, pi/9, pi/5, pi/2];
 
 % Initialise
 t = nt;
@@ -49,47 +33,33 @@ for i_pairs=1:N_pairs
         
         s = i / N_w;
         
-        if var_direction
-            if mod(i_pairs, 2) == 0
-                s = i / N_w;
-            else
-                s = 1 - (i / N_w);
-            end
-        end
-        
-        if var_phase
-            phi = phis(i_pairs);
-        end
-        
         time_component = k*s - omega*t + phi;
 
         beta = 1;
-
-        if s > 0.5 && tail_motion
-            beta = 2 * (1 - s);
-        end
-        
-        if s > 0.5 && wiggly_tail_motion
-            param = 4;
-            beta = (2*(param - 1)*s) + 2 - param;
-        end
-        
-        if s > 0.25 && tail_motion_more
-           param = 4;
-           beta = (1 / 15) * (16*(param - 1)*s^2 + 16 - param); % <--- very wiggly tails 
-           %beta = (64/63)*(p - 1)*s^3 + p - (64/63)*(p - 1); % <--- very very wiggly tails
-        end
         
         if s > zeta && tail_final
-           beta = (B_a * (1 - ((1 - s) / (1 - zeta)))) + ((1 - s) / (1 - zeta));
+           beta = (beta_A * (1 - ((1 - s) / (1 - zeta)))) + ((1 - s) / (1 - zeta));
         end
-
+        
+        
         el_a = cl_el + lambda * beta * sin(time_component);
-        %el_b = cl_el + lambda * beta * cos(time_component);
-        %el_b = cl_el + lambda * beta * sin(time_component);
-        %el_b = cl_el;
-        el_b = cl_el + lambda * beta * sin(time_component + pi);
-
+        
+        if locomotion_type == 1
+            el_b = cl_el + lambda * beta * sin(time_component + pi); 
+        end
+        
+        if locomotion_type == 2
+            el_b = cl_el;
+        end
+        
+        if locomotion_type == 3
+            el_b = cl_el + lambda * beta * cos(time_component);
+        end
+        
+        if locomotion_type == 4
+            el_b = cl_el + lambda * beta * sin(time_component);
+        end
+        
         % Add forces
         [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, seg_a1, seg_a2, k_a, el_a);    
         [FX, FY] = add_spring_force_between_segments(FX, FY, X_IN, Y_IN, seg_b1, seg_b2, k_b, el_b); 

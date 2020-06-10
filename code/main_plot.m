@@ -1,4 +1,4 @@
-function main_plot(N_swimmers, x, y, alpha)
+function main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomotion_type)
 %   Supplementary code to 'Methods for suspensions of passive and
 %   active filaments', https://arxiv.org/abs/1903.12609 ,
 %   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
@@ -26,8 +26,7 @@ limit = 0.5; % originally 0.5, 1.2 for multiple swimmers
 
 
 % filename
-%filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
-filename = strcat('N_swimmers=', num2str(N_pairs_input), ',zeta=', num2str(p), 'beta=', num2str(q).txt');
+filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -510,7 +509,7 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     end
     
     % Cross-Links, Passive Links
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, p, q);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, lambda_s, k_s, beta_A, zeta, locomotion_type);
       
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);

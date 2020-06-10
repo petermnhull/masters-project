@@ -8,7 +8,7 @@ graphics = true;
 video = graphics;
 plot_step = 10;          % Plot every n timesteps
 save_step = 1;                % Save data to file every n timesteps
-save_plot_to_file = true;
+save_plot_to_file = false;
 
 % Plot centreline and walls of two filaments
 plot_centreline = false;

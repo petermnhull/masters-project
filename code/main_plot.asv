@@ -1,4 +1,4 @@
-function main_plot(N_swimmers, p, q)
+function main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta)
 %   Supplementary code to 'Methods for suspensions of passive and
 %   active filaments', https://arxiv.org/abs/1903.12609 ,
 %   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
@@ -16,7 +16,7 @@ N_input = 31;
 N_pairs_input = N_swimmers;
 
 % filament and fluids data
-[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input, N_pairs_input);
+[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data(N_input, N_pairs_input);
 
 % iteration process data
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
@@ -27,7 +27,7 @@ limit = 0.5; % originally 0.5, 1.2 for multiple swimmers
 
 % filename
 %filename = strcat(datestr(now, 'yyyymmdd-HHMMSS'), '.txt');     
-filename = strcat('N_swimmers=', num2str(N_pairs_input), ',zeta=', num2str(p), 'beta=', num2str(q).txt');
+filename = strcat('N_swimmers=', num2str(N_pairs_input), 'lambda-s=', num2str(lambda_s), 'kszeta=', num2str(p), 'beta=', num2str(q).txt');
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -63,7 +63,7 @@ PtoS = floor([0:Np-1]./N_w)+1;
 % (We are happy with the default positon of [X,Y]=[0,0] and default
 %  orientation of THETA=0 but you can change this here.)
 filament_separation = 5;
-[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, L);
+[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, L, x, y, alpha);
 
 % Having placed the first segment of each filament and set their
 % orientation, use robot_arm to construct the position of the remaining
@@ -419,21 +419,7 @@ for nt = 1:TOTAL_STEPS
         end
                
         set(gcf,'defaulttextinterpreter','latex');
-        
-
-        % Calculate quantifiers for the filament
-        %A_over_L = (max(Y_S) - min(Y_S))/L;
-        %body_velocity_Y = mean(VY);
-        %eff_drag_coeff = -weight_per_unit_length*L/body_velocity_Y;
-        
-        %title(['nt='  num2str(nt)  ', dt='  num2str(dt) ...
-        %       ', B='  num2str(B)  ', N_{sw}='  num2str(N_sw) ...
-        %       ', A/L=' num2str(A_over_L) ...
-        %       ', \gamma=' num2str(eff_drag_coeff) ''])
-        
-        
-        %title(['Filament bending using cross-linked forces. nt=' num2str(nt)''])
-
+          
         hold off
         
         % Aspect ratios
@@ -523,15 +509,8 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
         FY = -weight_per_unit_length*L/N_w*ones(Np,1);
     end
     
-    if base_case
-        % Forces for finding base case, hydrodynamic efficiency
-        f_epsilon = 0.5;
-        FY(1) = FY(1) - f_epsilon;
-        FY(N_w + 1) = FY(N_w + 1) - f_epsilon;
-    end
-    
     % Cross-Links, Passive Links
-    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, p, q);
+    [FX, FY] = all_external_forces(FX, FY, X_S, Y_S, N_w, DL, filament_separation, N_pairs, nt, steps_per_unit_time, dt, T_S, L, lambda_s, k_s, beta_A, zeta);
       
     % Elastic forces
     [TAUZ] = elastic_torques(TAUZ, TX_S, TY_S, KB, SW_IND, DL_SW);
