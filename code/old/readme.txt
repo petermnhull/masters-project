@@ -1,1 +1,1 @@
-These functions only relate to non-time-dependent bending motions.
+These functions only relate to non-time-dependent bending motions or for outdated experiments.

@@ -1,14 +1,5 @@
-function main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomotion_type, gamma, phi, passive_links, filename, save_to_file, limit)
-%   Supplementary code to 'Methods for suspensions of passive and
-%   active filaments', https://arxiv.org/abs/1903.12609 ,
-%   by SF Schoeller, AK Townsend, TA Westwood & EE Keaveny.
-%
-%   It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the
-%   paper) with a reduced 'robot arm' system of nonlinear equations.
-%
-%   To use, just run main().
+function main_plot(N_swimmers, x, y, alpha, lambda_s, k_s, beta_A, zeta, locomotion_type, gamma, phi, passive_links, filename, save_to_file, limit, repetitions)
 
-% test
 % Setup
 [graphics, video, plot_step, save_step, plot_centreline, plot_walls, plot_initial, wdth_centreline, wdth_wall, plot_links, wdth_links, plot_links_psv, save_plot_to_file] = set_up_graphics();
 
@@ -19,7 +10,7 @@ N_pairs_input = N_swimmers;
 [a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data(N_input, N_pairs_input);
 
 % iteration process data
-[max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);   
+[max_broyden_steps, steps_per_unit_time, concheck_tol] = parameters(Np);   
 
 % Set up segment position vectors.
 %   X_S is x^(j+1), i.e. at next timestep (which we are solving for)
@@ -52,39 +43,34 @@ PtoS = zeros(Np, 1);
 PtoS = floor([0:Np-1]./N_w)+1;
 
 % Set up position and orientation of first segment in every filament
-% (We are happy with the default positon of [X,Y]=[0,0] and default
-%  orientation of THETA=0 but you can change this here.)
 filament_separation = 5;
-[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, N_sw, filament_separation, N_pairs, x, y, alpha);
+[X, Y, THETA] = initial_positions(X, Y, THETA, N_w, filament_separation, N_pairs, x, y, alpha);
 
-% Having placed the first segment of each filament and set their
-% orientation, use robot_arm to construct the position of the remaining
-% segments. For more, type 'help robot_arm'.
-[X,Y] = robot_arm(X,Y,THETA,SW_IND,DL);
+% Use robot arm to construct the rest of each filament given the first segment
+[X,Y] = robot_arm(X, Y, THETA, SW_IND, DL);
 
 % Zero the velocities and angular velocities of the segments
-VX = zeros(Np,1);        % velocity of segment in x-direction
-VY = zeros(Np,1);        % velocity of segment in y-direction
-OMEGZ = zeros(Np,1);     % angular velocity of segment (in z-direction)
+VX = zeros(Np, 1);        % velocity of segment in x-direction
+VY = zeros(Np, 1);        % velocity of segment in y-direction
+OMEGZ = zeros(Np, 1);     % angular velocity of segment (in z-direction)
 
 % Zero the forces and torques on the segments
-FX = zeros(Np,1);        % force on each segment in x-direction
-FY = zeros(Np,1);        % force on each segment in y-direction
-TAUZ = zeros(Np,1);      % torque on each segment (in z-direction)
+FX = zeros(Np, 1);        % force on each segment in x-direction
+FY = zeros(Np, 1);        % force on each segment in y-direction
+TAUZ = zeros(Np, 1);      % torque on each segment (in z-direction)
 
-% Tensions from Han-Peskin on segments
+% If used, initiliase tensions from Han-Peskin on segments
 T = zeros(Np, 1);
 T_S = T;
 
-% Steric force setup.
-% For explanation, type 'help collision_barrier'.
+% Steric force initialisation
 map = [1 1 1 1]';
 list = [0:Np-1]';
 head = Np;
 Lx_collision = 1000;
 Ly_collision = 1000;
 
-% Initial guesses
+% Initial guesses for method
 X_T = X;
 Y_T = Y;
 THETA_T = THETA;
@@ -95,27 +81,27 @@ LAMBDA2 = zeros(N_lam,1);
 LAMBDA1_0 = zeros(N_lam,1);
 LAMBDA2_0 = zeros(N_lam,1);
 
-% Segment size-related stuff
 drag_coeff = (6*pi*a);
 vis_tor_coeff = 8*pi*a^3;
-RAD = a*ones(Np,1);         % Segment size vector (a = filament thickness)
+RAD = a*ones(Np,1);        
 
 % Newton step Delta X where at iteration k, X_(k+1) = X_k + Delta X
 DeltaX = zeros(3*Np,1);
 
 % Time
 unit_time = L*mu/weight_per_unit_length;
-TOTAL_STEPS = num_settling_times*steps_per_unit_time;
+TOTAL_STEPS = repetitions*steps_per_unit_time;
 dt = unit_time/steps_per_unit_time;
 t = 0;
 plot_now = plot_step - 1;
 save_now = save_step - 1;
 
-% Time and iteration counts
+% Time and Iteration counters
 frame_time = zeros(TOTAL_STEPS,1);
 iters = zeros(TOTAL_STEPS,1);       % Number of Broyden's iterations
 running_total_count = 0;            % For average number of Broyden's iters
 
+% If writing to video
 if video
     Filament_movie = VideoWriter(['video.avi']); % Name it.
     Filament_movie.FrameRate = 10;  % How many frames per second.
@@ -123,13 +109,13 @@ if video
     framecount = 1;
 end
 
-idx = reshape(reshape([1:3*Np],Np,3)',3*Np,1);   % For filament indexing
+% Filament indexing
+idx = reshape(reshape([1:3*Np],Np,3)',3*Np,1); 
 
 J0invERROR_VECk = zeros(3*Np,1);   % J_0^{-1} f(X_k)      in Algorithm 2
 J0invERROR_VECk1 = zeros(3*Np,1);  % J_0^{-1} f(X_(k+1))  in Algorithm 2
 
 % Step in time
-
 for nt = 1:TOTAL_STEPS
     iter = 0;
 
@@ -160,7 +146,7 @@ for nt = 1:TOTAL_STEPS
     % X   is x^(j)
     % X_T is x^(j-1)
 
-    % Aim of this is to update X_S
+    % Update X_S
     if(nt == 1)
         X_S = X;
         Y_S = Y;
@@ -168,21 +154,21 @@ for nt = 1:TOTAL_STEPS
         TX_S = cos(THETA_S);
         TY_S = sin(THETA_S);
         
-        % Initialise lagrange multiplier for tethering
+        % Initialise Lagrange multiplier for tethering
         gam = zeros(2,1);
     else
-        % Rearranged linear interpolation as guess for x^(j+1), i.e.
-        % x^j = 0.5*( x^(j-1) + x^(j+1) )
+        % Rearranged linear interpolation as guess for x^(j+1), i.e. x^j = 0.5*( x^(j-1) + x^(j+1) )
         THETA_S = 2.0*THETA - THETA_T;
         TX_S = cos(THETA_S);
         TY_S = sin(THETA_S);
+        
         for j_sw = 1:N_sw
             first_bead = SW_IND(j_sw,1);
             X_S(first_bead) = 2*X(first_bead) - X_T(first_bead);
             Y_S(first_bead) = 2*Y(first_bead) - Y_T(first_bead);
         end
-        % Having guessed first segment in filament, use robot_arm to
-        % guess rest
+        
+        % Use robot arm to construct the filaments
         [X_S,Y_S] = robot_arm(X_S,Y_S,THETA_S,SW_IND,DL);
 
     end
@@ -206,8 +192,7 @@ for nt = 1:TOTAL_STEPS
     
     while(concheck == 1) % Alg 2, Line 4
         % Alg 2, Line 5. DeltaX is Delta X in paper.
-        DeltaX = -apply_inverse_jacobian(J0invERROR_VECk, Cmat, Dmat, ...
-                                                       ERROR_VECk, iter+1);
+        DeltaX = -apply_inverse_jacobian(J0invERROR_VECk, Cmat, Dmat, ERROR_VECk, iter+1);
        
         % Update the positions and lambdas
         THETA_S = THETA_S + DeltaX(2*Np + 1:3*Np);
@@ -228,7 +213,7 @@ for nt = 1:TOTAL_STEPS
             end
         end
         
-        [X_S,Y_S] = robot_arm(X_S,Y_S,THETA_S,SW_IND,DL);
+        [X_S,Y_S] = robot_arm(X_S, Y_S, THETA_S, SW_IND, DL);
         lambda_locations = 1:2*Np;
         lambda_locations([1:N_w:end]) = [];
         DeltaX_lambdas = DeltaX(lambda_locations);
