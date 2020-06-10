@@ -8,7 +8,7 @@ Original repository for single filaments falling under gravity (accessed 1 Octob
 
 ## Instructions
 1. Clone repository.
-2. Open main_plot.m
+2. Open main.m
 3. Choose number of swimmers.
 4. Choose parameters for each swimmer: amplitude ratio, wave number, etc.
 5. Choose whether to save velocities, etc. to file.
