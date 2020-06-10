@@ -16,7 +16,7 @@ N_input = 31;
 N_pairs_input = N_swimmers;
 
 % filament and fluids data
-[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity, base_case] = data(N_input, N_pairs_input);
+[a, N_sw, N_w, Np, N_lam, B, weight_per_unit_length, DL, L, mu, KB, KBdivDL, N_pairs, tethered, gravity] = data(N_input, N_pairs_input);
 
 % iteration process data
 [max_broyden_steps, steps_per_unit_time, num_settling_times, concheck_tol] = parameters(Np);
@@ -507,13 +507,6 @@ function [concheck_local,ERROR_VECk1_local,VY] = F(X_S, Y_S, TX_S, TY_S,...
     
     if gravity
         FY = -weight_per_unit_length*L/N_w*ones(Np,1);
-    end
-    
-    if base_case
-        % Forces for finding base case, hydrodynamic efficiency
-        f_epsilon = 0.5;
-        FY(1) = FY(1) - f_epsilon;
-        FY(N_w + 1) = FY(N_w + 1) - f_epsilon;
     end
     
     % Cross-Links, Passive Links

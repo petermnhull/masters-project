@@ -7,37 +7,17 @@ FY = FY_IN;
 
 passive_links_full = true;
 
-cross_links_trig = false;
-cross_links_linear = false;
-cross_links_linear_osc = false;
 cross_links_swimming = true;
 cross_links_han_peskin = false;
 
-% -- PARAMETERS (NOT FOR HAN PESKIN)--
-
+% -- PARAMETERS --
 % Cross link equilibrium length
 cl_el = sqrt(filament_separation^2 + DL^2);
 
 % Constant for full passive links
 k_f = 10; %10
 
-
 % ---- Add Forces ----
-    
-% Cross linked forces with variable arc length, trig
-if cross_links_trig
-    [FX, FY] = cl_forces_variable_al(FX, FY, X_S, Y_S, N_w, cl_el, L);
-end
-    
-% Cross linked forces with variable arc length, linear
-if cross_links_linear
-    [FX, FY] = cl_forces_variable_al_linear(FX, FY, X_S, Y_S, N_w, cl_el, L);
-end
-
-% Cross linked forces with variable arc length, linear
-if cross_links_linear_osc
-    [FX, FY] = cl_forces_variable_al_linear_osc(FX, FY, X_S, Y_S, N_w, cl_el, nt, steps_per_unit_time);
-end
 
 % Cross linked forces with variable arc length, linear, swimming
 if cross_links_swimming
