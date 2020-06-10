@@ -27,8 +27,8 @@ end
     
 % Passive Links (every set of segments)
 % - for use with pairs of filaments
-if passive_links
-    for i_pairs=1:N_pairs
+for i_pairs=1:N_pairs
+    if passive_links(i_pairs)
         for j=1:N_w
             seg_a = (((2 * i_pairs) - 2) * N_w) + j;
             seg_b = (((2 * i_pairs) - 1) * N_w) + j;

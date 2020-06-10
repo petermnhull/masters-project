@@ -1,5 +1,6 @@
  function main()
 
+% ----- Number of swimmers -----
 N_swimmers = 2;
 
 % ----- Initial positions of each swimmer -----
@@ -18,11 +19,11 @@ phi = [0, 0];
 % ----- Motion type (1 = symmetric, 2 = peristalsis, 3 = asymmetric I, 4 = asymmetric II) -----
 locomotion_type = [1, 2];
 
-% ----- Passive links -----
-passive_links = true;
+% ----- Passive links for swimmers (warning: increase amplitude ratio if false)-----
+passive_links = [true, true];
 
 % ----- Simulation Time -----
-repetitions = 3;
+repetitions = 1;
 
 % ----- Plotting and Saving ------
 % For plots
