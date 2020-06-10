@@ -2,13 +2,12 @@
 
 N_swimmers = 2;
 
-% ----- Parameters for swimmers -----
-% Initial positions of each swimmer
+% ----- Initial positions of each swimmer -----
 x = [0, 20];
 y = [0, 0];                  
 alpha = [0, 0];                % Orientation
 
-% Basic parameters
+% ----- Basic parameters -----
 lambda_s = [10, 10];           % Amplitude Ratio
 k_s = [1.5, 3];                % Wavenumber
 beta_A = [1, 1];               % Multiplier on Amplitude
@@ -17,7 +16,7 @@ gamma = [5, 10];               % Phase
 phi = [0, 0];
 
 % ----- Motion type (1 = symmetric, 2 = peristalsis, 3 = asymmetric I, 4 = asymmetric II) -----
-locomotion_type = [1, 4];
+locomotion_type = [1, 2];
 
 % ----- Passive links -----
 passive_links = true;

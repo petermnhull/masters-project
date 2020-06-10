@@ -1,0 +1,1 @@
+These functions only relate to non-time-dependent bending motions.

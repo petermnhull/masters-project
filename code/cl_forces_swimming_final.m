@@ -60,11 +60,11 @@ for i_pairs=1:N_pairs
         if locomotion_type(i_pairs) == 1
             el_b = el_b + lambda * beta * sin(time_component + pi); 
         end
-        if locomotion_type(i_pairs) == 3
-            el_b = el_b + lambda * beta * cos(time_component);
+        if locomotion_type(i_pairs) == 2
+            el_b = el_b + lambda * beta * sin(time_component);
         end
         if locomotion_type(i_pairs) == 4
-            el_b = el_b + lambda * beta * sin(time_component);
+            el_b = el_b + lambda * beta * cos(time_component);
         end
         
         % Add axonemal driving force to segment
