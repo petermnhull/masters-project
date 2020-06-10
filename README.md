@@ -12,9 +12,11 @@ It uses the 'EJBb' version of Broyden's method (Algorithm 2 in the paper) with a
 ## Instructions
 1. Clone repository.
 2. Open main_plot.m
-3. Choose parameters: number of swimmers, driving force amplitude, wavenumber, beta_A, zeta.
-4. Choose whether to save velocities, etc. to file.
-5. Run!
+3. Choose number of swimmers.
+4. Choose parameters for each swimmer: amplitude ratio, wave number, etc.
+5. Choose whether to save velocities, etc. to file.
+6. Run!
 
 ## Additional Instructions
 - Access set_up_graphics.m to change the plotting, and to disable graphics or saving video to file.
+- Access parameters.m to change the running time, steps per unit time, etc.
