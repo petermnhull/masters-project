@@ -4,7 +4,7 @@ Adaptation of an existing single filament model for modelling a two-dimensional 
 
 The code uses the method described [here](https://arxiv.org/abs/1903.12609) for modelling a single kirchhoff filament falling under gravity. It uses the EJBb version of Broyden's method with a reduced system of nonlinear equations. For solving the hydrodynamic forces it uses the RPY tensor.
 
-The thesis containing the background and extensive detailing of the axoneme model is also available for viewing.
+The thesis containing the background and extensive detailing of the axoneme model is also available for viewing. The slides for a final presentation are also included.
 
 Original repository for single filaments falling under gravity (accessed 1 October 2019): https://github.com/ekeaveny/filaments/tree/master/matlab-2d-rpy
 
