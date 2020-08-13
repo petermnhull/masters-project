@@ -380,9 +380,6 @@ for nt = 1:TOTAL_STEPS
                 % scaled by length of filament / nondimensionalising
                 plot((X_S(SW_IND(i_sw,:)))/L, (Y_S(SW_IND(i_sw,:)))/L, ...
                     'k', 'LineWidth', wdth_wall);
-
-                % added hold on to try and fix problem
-                % this is done so that the axes isn't being cleared
                 hold on;
             end
         end
@@ -405,8 +402,8 @@ for nt = 1:TOTAL_STEPS
         ylim([com_Y/L - limit, com_Y/L + limit]);
         
         % Labelling
-        xlabel('$x / L$');
-        ylabel('$y / L$');
+        xlabel('$x_{avg} / L$');
+        ylabel('$y_{avg} / L$');
         axis equal
         
         % Video recording
